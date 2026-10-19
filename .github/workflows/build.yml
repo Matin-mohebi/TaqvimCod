@@ -47,7 +47,7 @@ jobs:
         run: |
           xcodebuild -project ios/TaqvimCod.xcodeproj -target TaqvimCod \
             -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' \
+            -sdk iphonesimulator \
             SYMROOT="$PWD/ios/build" \
             build CODE_SIGNING_ALLOWED=NO
 
