@@ -21,6 +21,9 @@ struct TaqvimCodApp: App {
                 .environment(\.layoutDirection, lang == "en" ? .ltr : .rtl)
                 .preferredColorScheme(preferredScheme)
                 .onAppear {
+                    UserDefaults.standard.register(defaults: [
+                        "lang": "fa", "theme": 0, "hijri_adj": -1
+                    ])
                     EventStore.shared.requestAccess()
                 }
         }
