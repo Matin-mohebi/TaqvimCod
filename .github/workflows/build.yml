@@ -48,13 +48,15 @@ jobs:
           xcodebuild -project ios/TaqvimCod.xcodeproj -target TaqvimCod \
             -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
+            SYMROOT="$PWD/build" \
             build CODE_SIGNING_ALLOWED=NO
 
-      - name: Upload iOS build log artifacts
+      - name: Upload iOS build artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: TaqvimCod-iOS-build
           path: |
+            ios/build/Debug-iphonesimulator/*.app
             ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
           if-no-files-found: ignore
