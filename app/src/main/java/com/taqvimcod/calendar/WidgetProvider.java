@@ -81,7 +81,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 } else {
                     when = S.fmtTime(ctx, ev.begin);
                 }
-                next = (fa ? dayName : dayName) + " " + when + " — " + ev.title;
+                next = dayName + " " + when + " — " + ev.title;
                 break;
             }
         }

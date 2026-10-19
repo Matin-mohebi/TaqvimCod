@@ -6,14 +6,14 @@ def keystoreFile = rootProject.file("taqvimcod.keystore")
 
 android {
     namespace 'com.taqvimcod.calendar'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.taqvimcod.calendar"
         minSdk 29
-        targetSdk 34
-        versionCode 1
-        versionName "1.0.0"
+        targetSdk 35
+        versionCode 2
+        versionName "1.1.0"
     }
 
     if (keystoreFile.exists()) {
@@ -29,7 +29,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keystoreFile.exists()) {
                 signingConfig signingConfigs.release
             }

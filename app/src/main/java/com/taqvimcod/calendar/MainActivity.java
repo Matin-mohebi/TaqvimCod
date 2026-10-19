@@ -2,6 +2,7 @@ package com.taqvimcod.calendar;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.ContentObserver;
@@ -9,6 +10,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +22,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -32,7 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Main screen: Persian month grid + live Google Calendar events (two-way).
+ * Main screen: Persian month grid + live Google Calendar events (two-way sync).
  */
 public class MainActivity extends Activity {
 
@@ -45,11 +48,15 @@ public class MainActivity extends Activity {
     private int curJy, curJm;
     private Dates.JDate today;
 
-    private TextView tvTitle, tvTodayBtn, tvSettingsBtn, tvMonthYear, tvPrev, tvNext,
-            tvDateMain, tvDateSub, tvCountdown, tvEventsTitle, tvSyncBadge;
-    private LinearLayout chipsRow, panel;
+    private LinearLayout barWrap, chipsRow, panel;
+    private View statusSpacer;
+    private TextView tvTodayBtn, tvSettingsBtn, tvMonthYear, tvPrev, tvNext,
+            tvDateMain, tvDateSub, tvEventsTitle, tvSyncBadge;
+    private FrameLayout countdownCard;
+    private TextView tvCountDays, tvCountLabel, tvCountName;
     private MonthView month;
     private SparseArray<MonthView.DayCell> lastCells = new SparseArray<>();
+    private boolean rationaleShown;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -77,7 +84,7 @@ public class MainActivity extends Activity {
         }
         super.onCreate(savedInstanceState);
         buildUi();
-        if (!CalendarRepo.hasPerms(this)) CalendarRepo.request(this);
+        if (!CalendarRepo.hasPerms(this)) askPermission();
     }
 
     private void resetToToday() {
@@ -93,15 +100,22 @@ public class MainActivity extends Activity {
         out.putInt("selJy", selJy); out.putInt("selJm", selJm); out.putInt("selJd", selJd);
     }
 
-    // ---------------- UI ----------------
+    // ---------------- helpers ----------------
 
-    private int dp(int v) { return (int) (v * getResources().getDisplayMetrics().density); }
+    private int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density); }
 
     private Typeface font(String which) { return MonthView.Font.get(this, which); }
 
     private GradientDrawable round(int color, int radiusDp) {
         GradientDrawable gd = new GradientDrawable();
         gd.setColor(color);
+        gd.setCornerRadius(dp(radiusDp));
+        return gd;
+    }
+
+    private GradientDrawable grad(int radiusDp) {
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{pal.gradStart, pal.gradEnd});
         gd.setCornerRadius(dp(radiusDp));
         return gd;
     }
@@ -126,15 +140,20 @@ public class MainActivity extends Activity {
         static final String BOLD = MonthView.Font.BOLD;
     }
 
+    // ---------------- UI ----------------
+
     private void buildUi() {
         Window w = getWindow();
-        w.setStatusBarColor(pal.surface);
-        w.setNavigationBarColor(pal.surface);
+        try { w.setStatusBarColor(pal.gradStart); } catch (Exception ignored) {}
+        try { w.setNavigationBarColor(pal.bg); } catch (Exception ignored) {}
         View decor = w.getDecorView();
         int vis = decor.getSystemUiVisibility();
-        if (!pal.dark) vis |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        else vis &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        if (!pal.dark) vis |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        else vis &= ~(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         decor.setSystemUiVisibility(vis);
+        applySecureFlag();
 
         FrameLayout rootF = new FrameLayout(this);
         rootF.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -145,39 +164,61 @@ public class MainActivity extends Activity {
         content.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        // ---- top bar ----
-        LinearLayout topBar = new LinearLayout(this);
-        topBar.setOrientation(LinearLayout.HORIZONTAL);
-        topBar.setGravity(Gravity.CENTER_VERTICAL);
-        topBar.setPadding(dp(18), dp(12), dp(18), dp(6));
-        tvTitle = text(S.t(this, "app_name"), 20, pal.accent, Font.SEMIBOLD, true);
-        topBar.addView(tvTitle);
-        TextView spacer = new TextView(this);
-        spacer.setLayoutParams(new LinearLayout.LayoutParams(0, 1, 1f));
-        topBar.addView(spacer);
-        tvTodayBtn = text(S.t(this, "today"), 13, pal.accent, Font.MEDIUM, false);
-        tvTodayBtn.setPadding(dp(14), dp(7), dp(14), dp(7));
-        tvTodayBtn.setBackground(ripple(pal.accentSoft, 20));
+        // ---- gradient top bar (extends behind the status bar on Android 15+) ----
+        barWrap = new LinearLayout(this);
+        barWrap.setOrientation(LinearLayout.VERTICAL);
+        barWrap.setBackground(grad(0));
+        barWrap.setPadding(dp(16), dp(4), dp(16), dp(14));
+        content.addView(barWrap);
+
+        statusSpacer = new View(this);
+        barWrap.addView(statusSpacer, new LinearLayout.LayoutParams(-1, 0));
+
+        LinearLayout barRow = new LinearLayout(this);
+        barRow.setOrientation(LinearLayout.HORIZONTAL);
+        barRow.setGravity(Gravity.CENTER_VERTICAL);
+        barRow.setPadding(0, dp(8), 0, 0);
+
+        TextView logo = text("ت", 20, pal.onGrad, Font.BOLD, true);
+        logo.setGravity(Gravity.CENTER);
+        logo.setBackground(grad(14));
+        logo.setElevation(dp(2));
+        barRow.addView(logo, new LinearLayout.LayoutParams(dp(40), dp(40)));
+
+        LinearLayout titleCol = new LinearLayout(this);
+        titleCol.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams lpTitle = new LinearLayout.LayoutParams(0, -2, 1f);
+        lpTitle.leftMargin = dp(11);
+        titleCol.addView(text(S.t(this, "app_name"), 18.5f, pal.onGrad, Font.SEMIBOLD, true));
+        titleCol.addView(text(S.t(this, "subtitle"), 10.5f, pal.onGradSub, Font.REGULAR, false));
+        barRow.addView(titleCol, lpTitle);
+
+        tvTodayBtn = text(S.t(this, "today"), 12.5f, pal.onGrad, Font.MEDIUM, false);
+        tvTodayBtn.setPadding(dp(13), dp(7), dp(13), dp(7));
+        tvTodayBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
         tvTodayBtn.setOnClickListener(v -> { resetToToday(); refreshAll(); });
-        LinearLayout.LayoutParams lpToday = new LinearLayout.LayoutParams(-2, -2);
-        lpToday.leftMargin = dp(8);
-        topBar.addView(tvTodayBtn, lpToday);
-        tvSettingsBtn = text(S.t(this, "settings"), 13, pal.textSub, Font.MEDIUM, false);
-        tvSettingsBtn.setPadding(dp(14), dp(7), dp(14), dp(7));
-        tvSettingsBtn.setBackground(ripple(pal.surfaceAlt, 20));
-        tvSettingsBtn.setOnClickListener(v -> UiDialogs.settings(this));
+        barRow.addView(tvTodayBtn, new LinearLayout.LayoutParams(-2, -2));
+
         LinearLayout.LayoutParams lpSet = new LinearLayout.LayoutParams(-2, -2);
-        lpSet.leftMargin = dp(6);
-        topBar.addView(tvSettingsBtn, lpSet);
-        content.addView(topBar);
+        lpSet.leftMargin = dp(7);
+        tvSettingsBtn = text("⚙", 15, pal.onGrad, Font.REGULAR, false);
+        tvSettingsBtn.setGravity(Gravity.CENTER);
+        tvSettingsBtn.setPadding(dp(9), dp(5), dp(9), dp(5));
+        tvSettingsBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
+        tvSettingsBtn.setOnClickListener(v -> UiDialogs.settings(this));
+        barRow.addView(tvSettingsBtn, lpSet);
+        barWrap.addView(barRow);
 
         // ---- header card ----
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.VERTICAL);
-        header.setPadding(dp(14), dp(12), dp(14), dp(14));
+        header.setPadding(dp(16), dp(10), dp(16), dp(14));
         LinearLayout.LayoutParams lpHeader = new LinearLayout.LayoutParams(-1, -2);
-        lpHeader.setMargins(dp(12), dp(4), dp(12), dp(6));
-        header.setBackground(round(pal.surface, 18));
+        lpHeader.setMargins(dp(12), dp(10), dp(12), dp(4));
+        header.setBackground(round(pal.surface, 22));
+        header.setElevation(dp(3));
         content.addView(header, lpHeader);
 
         LinearLayout navRow = new LinearLayout(this);
@@ -185,7 +226,7 @@ public class MainActivity extends Activity {
         navRow.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         navRow.setGravity(Gravity.CENTER_VERTICAL);
         tvPrev = text("‹", 26, pal.accent, Font.BOLD, true);
-        tvPrev.setPadding(dp(16), dp(2), dp(16), dp(2));
+        tvPrev.setPadding(dp(18), dp(4), dp(18), dp(4));
         tvPrev.setBackground(ripple(0x00000000, 20));
         tvPrev.setOnClickListener(v -> changeMonth(false));
         navRow.addView(tvPrev);
@@ -193,31 +234,29 @@ public class MainActivity extends Activity {
         tvMonthYear.setGravity(Gravity.CENTER);
         navRow.addView(tvMonthYear, new LinearLayout.LayoutParams(0, -2, 1f));
         tvNext = text("›", 26, pal.accent, Font.BOLD, true);
-        tvNext.setPadding(dp(16), dp(2), dp(16), dp(2));
+        tvNext.setPadding(dp(18), dp(4), dp(18), dp(4));
         tvNext.setBackground(ripple(0x00000000, 20));
         tvNext.setOnClickListener(v -> changeMonth(true));
         navRow.addView(tvNext);
         header.addView(navRow);
 
-        tvDateMain = text("", 16, pal.text, Font.SEMIBOLD, true);
+        tvDateMain = text("", 16.5f, pal.text, Font.SEMIBOLD, true);
         header.addView(tvDateMain, new LinearLayout.LayoutParams(-2, -2));
         LinearLayout.LayoutParams lpSub = new LinearLayout.LayoutParams(-2, -2);
         lpSub.topMargin = dp(2);
-        tvDateSub = text("", 12.5f, pal.textSub, Font.REGULAR, false);
+        tvDateSub = text("", 12, pal.textSub, Font.REGULAR, false);
         header.addView(tvDateSub, lpSub);
 
         chipsRow = new LinearLayout(this);
         chipsRow.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams lpChips = new LinearLayout.LayoutParams(-2, -2);
-        lpChips.topMargin = dp(8);
+        lpChips.topMargin = dp(9);
         header.addView(chipsRow, lpChips);
 
-        tvCountdown = text("", 12, pal.accent, Font.MEDIUM, false);
-        tvCountdown.setPadding(dp(12), dp(6), dp(12), dp(6));
-        tvCountdown.setBackground(round(pal.accentSoft, 16));
-        LinearLayout.LayoutParams lpCd = new LinearLayout.LayoutParams(-2, -2);
-        lpCd.topMargin = dp(8);
-        header.addView(tvCountdown, lpCd);
+        countdownCard = countdownView();
+        LinearLayout.LayoutParams lpCd = new LinearLayout.LayoutParams(-1, -2);
+        lpCd.topMargin = dp(10);
+        header.addView(countdownCard, lpCd);
 
         // ---- month view ----
         month = new MonthView(this);
@@ -226,7 +265,7 @@ public class MainActivity extends Activity {
             @Override public void onSwipe(boolean next) { changeMonth(next); }
         });
         LinearLayout.LayoutParams lpMonth = new LinearLayout.LayoutParams(-1, -2);
-        lpMonth.setMargins(dp(6), dp(4), dp(6), 0);
+        lpMonth.setMargins(dp(6), dp(2), dp(6), 0);
         content.addView(month, lpMonth);
 
         // ---- events title row ----
@@ -239,7 +278,9 @@ public class MainActivity extends Activity {
         TextView sp2 = new TextView(this);
         sp2.setLayoutParams(new LinearLayout.LayoutParams(0, 1, 1f));
         syncRow.addView(sp2);
-        tvSyncBadge = text("● " + S.t(this, "sync_active"), 10.5f, pal.green, Font.REGULAR, false);
+        tvSyncBadge = text("● " + S.t(this, "sync_active"), 10, pal.green, Font.MEDIUM, false);
+        tvSyncBadge.setPadding(dp(10), dp(4), dp(10), dp(4));
+        tvSyncBadge.setBackground(round(pal.surfaceAlt, 14));
         syncRow.addView(tvSyncBadge);
         content.addView(syncRow);
 
@@ -248,31 +289,94 @@ public class MainActivity extends Activity {
         scroll.setFillViewport(true);
         panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setPadding(dp(12), dp(2), dp(12), dp(96));
+        panel.setPadding(dp(12), dp(2), dp(12), dp(104));
         scroll.addView(panel);
         content.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1f));
 
         // ---- FAB ----
         TextView fab = text("+", 26, pal.onAccent, Font.BOLD, true);
         fab.setGravity(Gravity.CENTER);
-        fab.setBackground(ripple(pal.accent, 28));
-        fab.setElevation(dp(6));
-        FrameLayout.LayoutParams lpFab = new FrameLayout.LayoutParams(dp(56), dp(56),
+        fab.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                grad(19), null));
+        fab.setElevation(dp(7));
+        FrameLayout.LayoutParams lpFab = new FrameLayout.LayoutParams(dp(58), dp(58),
                 Gravity.BOTTOM | Gravity.LEFT);
         lpFab.leftMargin = dp(20);
-        lpFab.bottomMargin = dp(24);
+        lpFab.bottomMargin = dp(26);
         fab.setOnClickListener(v -> onFab());
+
+        // ---- edge-to-edge (enforced on Android 15 when targetSdk >= 35) ----
+        final View fabRef = fab;
+        rootF.setOnApplyWindowInsetsListener((v, ins) -> {
+            int top, bottom;
+            if (Build.VERSION.SDK_INT >= 30) {
+                android.graphics.Insets sb = ins.getInsets(WindowInsets.Type.systemBars());
+                top = sb.top; bottom = sb.bottom;
+            } else {
+                top = ins.getSystemWindowInsetTop();
+                bottom = ins.getSystemWindowInsetBottom();
+            }
+            LinearLayout.LayoutParams lpSp = (LinearLayout.LayoutParams) statusSpacer.getLayoutParams();
+            if (lpSp.height != top) { lpSp.height = top; statusSpacer.setLayoutParams(lpSp); }
+            panel.setPadding(dp(12), dp(2), dp(12), dp(104) + bottom);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) fabRef.getLayoutParams();
+            int want = dp(26) + bottom;
+            if (lp.bottomMargin != want) { lp.bottomMargin = want; fabRef.setLayoutParams(lp); }
+            return ins;
+        });
+
         rootF.addView(content);
         rootF.addView(fab, lpFab);
-
         setContentView(rootF);
+    }
+
+    private void applySecureFlag() {
+        if (Prefs.secureScreen(this)) {
+            getWindow().addFlags(WindowManager_FLAG_SECURE);
+        } else {
+            getWindow().clearFlags(WindowManager_FLAG_SECURE);
+        }
+    }
+
+    private static final int WindowManager_FLAG_SECURE = android.view.WindowManager.LayoutParams.FLAG_SECURE;
+
+    // ---------------- countdown card ----------------
+
+    private FrameLayout countdownView() {
+        FrameLayout card = new FrameLayout(this);
+        card.setBackground(round(pal.surfaceAlt, 18));
+        card.setPadding(dp(12), dp(10), dp(12), dp(10));
+
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+
+        tvCountDays = text("", 15, pal.onGrad, Font.BOLD, true);
+        tvCountDays.setGravity(Gravity.CENTER);
+        tvCountDays.setBackground(grad(21));
+        row.addView(tvCountDays, new LinearLayout.LayoutParams(dp(42), dp(42)));
+
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams lpCol = new LinearLayout.LayoutParams(0, -2, 1f);
+        lpCol.leftMargin = dp(11);
+        tvCountLabel = text("", 10, pal.textSub, Font.MEDIUM, false);
+        col.addView(tvCountLabel);
+        tvCountName = text("", 13, pal.text, Font.SEMIBOLD, true);
+        tvCountName.setMaxLines(1);
+        tvCountName.setEllipsize(TextUtils.TruncateAt.END);
+        col.addView(tvCountName);
+        row.addView(col, lpCol);
+
+        card.addView(row);
+        return card;
     }
 
     // ---------------- actions ----------------
 
     private void onFab() {
         if (!CalendarRepo.hasPerms(this)) {
-            CalendarRepo.request(this);
+            askPermission();
             return;
         }
         if (writableCals.isEmpty()) {
@@ -280,6 +384,20 @@ public class MainActivity extends Activity {
             return;
         }
         UiDialogs.eventForm(this, null);
+    }
+
+    /** rationale dialog first (Play-policy friendly), then the system prompt */
+    private void askPermission() {
+        if (rationaleShown) return;
+        rationaleShown = true;
+        new AlertDialog.Builder(new ContextThemeWrapper(this,
+                pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light))
+                .setTitle(S.t(this, "perm_title"))
+                .setMessage(S.t(this, "perm_rationale"))
+                .setPositiveButton(S.t(this, "grant"),
+                        (d, w2) -> CalendarRepo.request(this))
+                .setNegativeButton(S.t(this, "cancel"), null)
+                .show();
     }
 
     private void changeMonth(boolean next) {
@@ -346,6 +464,8 @@ public class MainActivity extends Activity {
             tvMonthYear.setText(S.fmtMonthYear(this, curJy, curJm));
             int[] tdy = {today.jy, today.jm, today.jd};
             month.setup(curJy, curJm, selJd, tdy, cells, pal, fa);
+            month.setAlpha(0.25f);
+            month.animate().alpha(1f).setDuration(200).start();
             updateHeaderInfo();
             updateCountdown();
             tvSyncBadge.setVisibility(perms ? View.VISIBLE : View.GONE);
@@ -371,28 +491,33 @@ public class MainActivity extends Activity {
             chip.setTextSize(11.5f);
             chip.setTypeface(font(Font.MEDIUM));
             chip.setTextColor(ev.holiday ? pal.red : pal.textSub);
-            chip.setPadding(dp(10), dp(5), dp(10), dp(5));
+            chip.setPadding(dp(11), dp(5), dp(11), dp(5));
             chip.setBackground(round(ev.holiday ? pal.redSoft : pal.surfaceAlt, 16));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
             lp.rightMargin = dp(6);
+            lp.topMargin = dp(2);
             chipsRow.addView(chip, lp);
         }
         chipsRow.setVisibility(chipsRow.getChildCount() == 0 ? View.GONE : View.VISIBLE);
     }
 
     private void updateCountdown() {
-        Object[] nxt = Holidays.nextHoliday(today.jy, today.jm, today.jd, Prefs.hijriAdj(this), 366);
-        String txt;
+        Object[] nxt = Holidays.nextHoliday(today.jy, today.jm, today.jd,
+                Prefs.hijriAdj(this), 366);
         if (nxt == null) {
-            txt = S.t(this, "no_holiday_soon");
-        } else {
-            int days = (Integer) nxt[0];
-            Holidays.Ev ev = (Holidays.Ev) nxt[1];
-            txt = days == 0
-                    ? S.t(this, "today_occasion").replace("%s", ev.name(fa))
-                    : S.d(this, days) + " " + (fa ? "روز تا " : "days until ") + ev.name(fa);
+            tvCountDays.setText("—");
+            tvCountLabel.setText(S.t(this, "next_holiday"));
+            tvCountName.setText(S.t(this, "no_holiday_soon"));
+            return;
         }
-        tvCountdown.setText(txt);
+        int days = (Integer) nxt[0];
+        Holidays.Ev ev = (Holidays.Ev) nxt[1];
+        tvCountDays.setText(S.d(this, days));
+        tvCountLabel.setText(days == 0
+                ? S.t(this, "today_holiday")
+                : S.t(this, "next_holiday") + " • " + S.d(this, days) + " " + S.t(this, "days"));
+        tvCountName.setText(ev.name(fa));
+        tvCountName.setTextColor(days == 0 ? pal.red : pal.text);
     }
 
     private void loadDay() {
@@ -431,7 +556,9 @@ public class MainActivity extends Activity {
             LinearLayout empty = new LinearLayout(this);
             empty.setOrientation(LinearLayout.VERTICAL);
             empty.setGravity(Gravity.CENTER);
-            empty.setPadding(dp(8), dp(28), dp(8), dp(28));
+            empty.setPadding(dp(8), dp(30), dp(8), dp(30));
+            empty.setBackground(round(pal.surface, 18));
+            empty.setAlpha(0.9f);
             TextView t1 = text(S.t(this, "no_events"), 13.5f, pal.textSub, Font.MEDIUM, false);
             t1.setGravity(Gravity.CENTER);
             TextView t2 = text(S.t(this, "no_events_hint"), 11.5f, pal.textSub, Font.REGULAR, false);
@@ -450,7 +577,7 @@ public class MainActivity extends Activity {
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
         box.setPadding(dp(16), dp(14), dp(16), dp(16));
-        box.setBackground(round(pal.redSoft, 16));
+        box.setBackground(round(pal.redSoft, 18));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.bottomMargin = dp(10);
         TextView t = text(S.t(this, "perm_title"), 14, pal.red, Font.BOLD, true);
@@ -464,7 +591,7 @@ public class MainActivity extends Activity {
         TextView grant = text(S.t(this, "grant"), 12.5f, pal.onAccent, Font.MEDIUM, false);
         grant.setPadding(dp(14), dp(8), dp(14), dp(8));
         grant.setBackground(ripple(pal.accent, 18));
-        grant.setOnClickListener(v -> CalendarRepo.request(this));
+        grant.setOnClickListener(v -> askPermission());
         TextView os = text(S.t(this, "open_settings"), 12.5f, pal.accent, Font.MEDIUM, false);
         os.setPadding(dp(14), dp(8), dp(14), dp(8));
         os.setBackground(ripple(pal.surfaceAlt, 18));
@@ -474,7 +601,7 @@ public class MainActivity extends Activity {
         row.addView(os, lpOs);
         os.setOnClickListener(v -> {
             try {
-                startActivity(new android.content.Intent(
+                startActivity(new Intent(
                         android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.parse("package:" + getPackageName())));
             } catch (Exception ignored) {}
@@ -488,24 +615,26 @@ public class MainActivity extends Activity {
     private View eventCard(CalendarRepo.Ev ev) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
-        card.setPadding(dp(10), dp(10), dp(10), dp(10));
-        card.setBackground(round(pal.surface, 14));
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(dp(11), dp(11), dp(11), dp(11));
+        card.setBackground(round(pal.surface, 17));
+        card.setElevation(dp(1.5f));
         LinearLayout.LayoutParams lpCard = new LinearLayout.LayoutParams(-1, -2);
         lpCard.bottomMargin = dp(8);
 
         View strip = new View(this);
         GradientDrawable stripBg = new GradientDrawable();
         stripBg.setColor(ev.calColor);
-        stripBg.setCornerRadius(dp(2));
+        stripBg.setCornerRadius(dp(2.5f));
         strip.setBackground(stripBg);
-        card.addView(strip, new LinearLayout.LayoutParams(dp(4), ViewGroup.LayoutParams.MATCH_PARENT));
+        card.addView(strip, new LinearLayout.LayoutParams(dp(4), dp(44)));
 
         LinearLayout inner = new LinearLayout(this);
         inner.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams lpInner = new LinearLayout.LayoutParams(0, -2, 1f);
-        lpInner.leftMargin = dp(10);
+        lpInner.leftMargin = dp(11);
 
-        TextView title = text(ev.title, 14.5f, pal.text, Font.SEMIBOLD, true);
+        TextView title = text(ev.title, 14, pal.text, Font.SEMIBOLD, true);
         inner.addView(title, new LinearLayout.LayoutParams(-2, -2));
 
         String time = ev.allDay
@@ -513,19 +642,21 @@ public class MainActivity extends Activity {
                 : (ev.end > ev.begin
                     ? S.t(this, "time_range").replace("%s", S.fmtTime(this, ev.begin)).replace("%s", S.fmtTime(this, ev.end))
                     : S.fmtTime(this, ev.begin));
-        TextView tvTime = text(time, 11.5f, pal.textSub, Font.REGULAR, false);
-        inner.addView(tvTime, new LinearLayout.LayoutParams(-2, -2));
+        TextView tvTime = text(time, 11, pal.accent, Font.MEDIUM, false);
+        LinearLayout.LayoutParams lpTime = new LinearLayout.LayoutParams(-2, -2);
+        lpTime.topMargin = dp(1);
+        inner.addView(tvTime, lpTime);
 
         String meta = ev.calName == null ? "" : ev.calName;
         if (!TextUtils.isEmpty(ev.location)) meta += (meta.isEmpty() ? "" : " • ") + ev.location;
         if (!meta.isEmpty()) {
-            TextView tvMeta = text(meta, 11, pal.textSub, Font.REGULAR, false);
+            TextView tvMeta = text(meta, 10.5f, pal.textSub, Font.REGULAR, false);
             tvMeta.setMaxLines(1);
             tvMeta.setEllipsize(TextUtils.TruncateAt.END);
             inner.addView(tvMeta, new LinearLayout.LayoutParams(-2, -2));
         }
         if (!TextUtils.isEmpty(ev.desc)) {
-            TextView tvDesc = text(ev.desc, 11, pal.textSub, Font.REGULAR, false);
+            TextView tvDesc = text(ev.desc, 10.5f, pal.textSub, Font.REGULAR, false);
             tvDesc.setMaxLines(2);
             tvDesc.setEllipsize(TextUtils.TruncateAt.END);
             inner.addView(tvDesc, new LinearLayout.LayoutParams(-2, -2));
@@ -534,17 +665,19 @@ public class MainActivity extends Activity {
 
         if (ev.writable) {
             LinearLayout actions = new LinearLayout(this);
-            actions.setOrientation(LinearLayout.HORIZONTAL);
-            actions.setGravity(Gravity.CENTER_VERTICAL);
-            TextView edit = text(S.t(this, "edit"), 11.5f, pal.accent, Font.MEDIUM, false);
-            edit.setPadding(dp(10), dp(6), dp(10), dp(6));
-            edit.setBackground(ripple(pal.accentSoft, 14));
+            actions.setOrientation(LinearLayout.VERTICAL);
+            actions.setGravity(Gravity.CENTER);
+            TextView edit = text("✎", 15, pal.accent, Font.REGULAR, false);
+            edit.setGravity(Gravity.CENTER);
+            edit.setPadding(dp(9), dp(6), dp(9), dp(6));
+            edit.setBackground(ripple(pal.accentSoft, 12));
             edit.setOnClickListener(v -> UiDialogs.eventForm(this, ev));
-            TextView del = text(S.t(this, "delete"), 11.5f, pal.red, Font.MEDIUM, false);
+            TextView del = text("🗑", 13, pal.red, Font.REGULAR, false);
+            del.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams lpDel = new LinearLayout.LayoutParams(-2, -2);
-            lpDel.leftMargin = dp(6);
-            del.setPadding(dp(10), dp(6), dp(10), dp(6));
-            del.setBackground(ripple(pal.redSoft, 14));
+            lpDel.topMargin = dp(5);
+            del.setPadding(dp(9), dp(6), dp(9), dp(6));
+            del.setBackground(ripple(pal.redSoft, 12));
             del.setOnClickListener(v -> deleteEvent(ev));
             actions.addView(edit);
             actions.addView(del, lpDel);
@@ -562,7 +695,7 @@ public class MainActivity extends Activity {
                     ? CalendarRepo.insert(this, calId, title, desc, start, end, allDay)
                     : CalendarRepo.update(this, edit.eventId, title, desc, start, end, allDay);
             ui.post(() -> {
-                Toast.makeText(this, ok ? S.t(this, "saved") : S.t(this, "no_writable_cal"),
+                Toast.makeText(this, ok ? S.t(this, "saved") : S.t(this, "save_failed"),
                         Toast.LENGTH_SHORT).show();
                 if (ok) refreshAll();
             });
@@ -587,15 +720,12 @@ public class MainActivity extends Activity {
                 .show();
     }
 
-    private void toast(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-    }
-
     // ---------------- lifecycle / live sync ----------------
 
     @Override
     protected void onResume() {
         super.onResume();
+        applySecureFlag();
         if (observer == null) {
             observer = new ContentObserver(new Handler()) {
                 @Override

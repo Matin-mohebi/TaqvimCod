@@ -76,6 +76,21 @@ public final class S {
         FA.put("invalid_time", "ساعت پایان باید بعد از ساعت شروع باشد");
         FA.put("tomorrow", "فردا");
         FA.put("no_holiday_soon", "در ۹۹ روز آینده تعطیلی رسمی نیست");
+        FA.put("subtitle", "تقویم جلالی • همگام با گوگل کالندر");
+        FA.put("next_holiday", "تعطیلی رسمی بعدی");
+        FA.put("days", "روز");
+        FA.put("security", "امنیت");
+        FA.put("secure_screen", "جلوگیری از اسکرین‌شات");
+        FA.put("secure_screen_note", "محتوای برنامه در اسکرین‌شات، ضبط صفحه و پیش‌نمایش چندوظیفه‌ای محافظت می‌شود.");
+        FA.put("privacy_title", "حریم خصوصی و امنیت");
+        FA.put("privacy_text", "تقویم کد هیچ دسترسی اینترنتی ندارد؛ رویدادها و تنظیمات شما هرگز از گوشی خارج نمی‌شوند. تنظیمات با رمزنگاری سخت‌افزاری AES-256-GCM و کلید Android Keystore ذخیره می‌شود و پشتیبان‌گیری ابری برای این برنامه غیرفعال است.");
+        FA.put("play_protect_title", "پیام Google Play Protect");
+        FA.put("play_protect_text", "اگر هنگام نصب پیام «برنامه ناشناس» یا هشدار Play Protect دیدید، نگران نباشید: این هشدار برای همه برنامه‌هایی که خارج از فروشگاه گوگل نصب می‌شوند نمایش داده می‌شود و به معنی خطرناک بودن برنامه نیست.\n\nتقویم کد کد مخرب ندارد، دسترسی اینترنت ندارد و فقط به تقویم گوشی شما دسترسی دارد.\n\nبرای ادامه نصب: روی پیام ضربه بزنید و گزینه «نصب در هر صورت» یا «جزئیات بیشتر ← نصب» را انتخاب کنید.");
+        FA.put("understood", "متوجه شدم");
+        FA.put("perm_rationale", "تقویم کد برای نمایش و ذخیره رویدادهای تقویم گوگل، به دسترسی تقویم نیاز دارد. رویدادها فقط روی گوشی خودتان خوانده و نوشته می‌شوند.");
+        FA.put("save_failed", "ذخیره نشد؛ دوباره تلاش کنید");
+        FA.put("slogan", "دقیق • امن • زیبا");
+        FA.put("today_holiday", "امروز تعطیل رسمی است");
         // ---- en ----
         EN.put("app_name", "Taqvim Kod");
         EN.put("today", "Today");
@@ -137,6 +152,21 @@ public final class S {
         EN.put("invalid_time", "End time must be after start time");
         EN.put("tomorrow", "Tomorrow");
         EN.put("no_holiday_soon", "No official holiday in the next 99 days");
+        EN.put("subtitle", "Jalali calendar • live Google Calendar sync");
+        EN.put("next_holiday", "Next official holiday");
+        EN.put("days", "days");
+        EN.put("security", "Security");
+        EN.put("secure_screen", "Block screenshots");
+        EN.put("secure_screen_note", "Protects the app content in screenshots, screen recording and the recents preview.");
+        EN.put("privacy_title", "Privacy & Security");
+        EN.put("privacy_text", "Taqvim Kod has NO internet permission — your events and settings never leave the device. Settings are stored with hardware-backed AES-256-GCM encryption using the Android Keystore, and cloud backup for this app is disabled.");
+        EN.put("play_protect_title", "Google Play Protect message");
+        EN.put("play_protect_text", "If you see an \"Unknown app\" or Play Protect warning while installing, don't worry: this warning appears for every app installed outside Google Play and does not mean the app is dangerous.\n\nTaqvim Kod contains no malicious code, has no internet access and only touches your device calendar.\n\nTo continue installing: tap the warning and choose \"Install anyway\" or \"More details → Install\".");
+        EN.put("understood", "Got it");
+        EN.put("perm_rationale", "Taqvim Kod needs calendar access to show and save your Google Calendar events. Events are only read from and written to your own device calendar.");
+        EN.put("save_failed", "Couldn't save; please try again");
+        EN.put("slogan", "Accurate • Secure • Beautiful");
+        EN.put("today_holiday", "Today is an official holiday");
 
         // ---- Persian Jalali month names ----
         FA_JM = new String[]{"فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"};

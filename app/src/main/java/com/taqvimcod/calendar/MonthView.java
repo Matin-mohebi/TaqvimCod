@@ -2,7 +2,9 @@ package com.taqvimcod.calendar;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.SparseArray;
 import android.view.GestureDetector;
@@ -10,7 +12,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-/** Persian month grid, drawn on canvas. RTL: first column (Saturday) on the right. */
+/**
+ * Persian month grid, drawn on canvas. RTL: first column (Saturday) on the right.
+ * Visual language: soft circular day badges, gradient "today" medallion,
+ * holiday tint, event dots — no harsh column shading.
+ */
 public class MonthView extends View {
 
     public interface Listener {
@@ -24,10 +30,9 @@ public class MonthView extends View {
 
     private final Paint pNum = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint pDow = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint pCirc = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint pBadge = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint pRing = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint pDot = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint pShade = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private Typeface tfNum, tfDow;
 
@@ -38,7 +43,7 @@ public class MonthView extends View {
     private boolean fa;
     private Listener listener;
 
-    private float pad = 0, dowH = 0, rowH = 0, cellW = 0;
+    private float pad = 0, dowH = 0, rowH = 0, cellW = 0, badgeR = 0;
 
     private final GestureDetector gd;
 
@@ -75,11 +80,7 @@ public class MonthView extends View {
         this.pal = pal; this.fa = fa;
         this.monthLen = Dates.jalaaliMonthLength(jy, jm);
         this.offset = Dates.weekdayFromJdn(Dates.j2d(jy, jm, 1));
-        float density = getResources().getDisplayMetrics().density;
-        pad = density * 8;
-        dowH = density * 26;
-        rowH = density * 46;
-        cellW = (getWidth() - pad * 2) / 7f;
+        applyMetrics();
         int rows = (offset + monthLen + 6) / 7;
         float h = dowH + rows * rowH + pad;
         if (getLayoutParams() == null || getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) {
@@ -90,10 +91,20 @@ public class MonthView extends View {
         invalidate();
     }
 
+    private void applyMetrics() {
+        float density = getResources().getDisplayMetrics().density;
+        pad = density * 6;
+        dowH = density * 30;
+        rowH = density * 47;
+        cellW = (getWidth() - pad * 2) / 7f;
+        badgeR = Math.min(cellW, rowH) * 0.345f;
+        pBadge.setShader(null);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int ow, int oh) {
         super.onSizeChanged(w, h, ow, oh);
-        cellW = (w - pad * 2) / 7f;
+        applyMetrics();
     }
 
     @Override
@@ -101,7 +112,7 @@ public class MonthView extends View {
         float density = getResources().getDisplayMetrics().density;
         int w = MeasureSpec.getSize(wms);
         int rows = (offset + monthLen + 6) / 7;
-        int h = (int) (density * 26 + rows * density * 46 + density * 8);
+        int h = (int) (density * 30 + rows * density * 47 + density * 6);
         super.onMeasure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY));
     }
@@ -117,26 +128,26 @@ public class MonthView extends View {
         if (pal == null) return;
         float density = getResources().getDisplayMetrics().density;
 
-        // Friday column soft shading
-        pShade.setColor(pal.surfaceAlt);
-        canvas.drawRect(getWidth() - pad - cellW, dowH, getWidth() - pad,
-                dowH + ((offset + monthLen + 6) / 7) * rowH, pShade);
-
         // weekday header
-        pDow.setTextSize(density * 13);
+        pDow.setTextSize(density * 12.5f);
         String[] dows = S.weekdaysShort(getContext());
+        float dowY = dowH / 2f + density * 4.5f;
         for (int c = 0; c < 7; c++) {
             pDow.setColor(c == 6 ? pal.red : pal.textSub);
             float cx = cxOf(c);
             float tw = pDow.measureText(dows[c]);
-            canvas.drawText(dows[c], cx - tw / 2f, dowH / 2f + density * 5, pDow);
+            canvas.drawText(dows[c], cx - tw / 2f, dowY, pDow);
         }
+        // thin divider under header
+        Paint pLine = new Paint();
+        pLine.setColor(pal.divider);
+        pLine.setStrokeWidth(density * 1);
+        canvas.drawLine(pad, dowH - density * 4, getWidth() - pad, dowH - density * 4, pLine);
 
-        // days
-        pNum.setTextSize(density * 17);
-        pCirc.setStyle(Paint.Style.FILL);
+        // day cells
+        pNum.setTextSize(density * 17.5f);
         pRing.setStyle(Paint.Style.STROKE);
-        pRing.setStrokeWidth(density * 1.8f);
+        pRing.setStrokeWidth(density * 1.7f);
         pDot.setStyle(Paint.Style.FILL);
         for (int jd = 1; jd <= monthLen; jd++) {
             int idx = offset + jd - 1;
@@ -151,25 +162,43 @@ public class MonthView extends View {
             boolean hasEvent = cell != null && cell.hasEvent;
             boolean friday = c == 6;
 
+            // background badge
             if (isToday) {
-                pCirc.setColor(pal.accent);
-                float rad = Math.min(cellW, rowH) * 0.34f;
-                canvas.drawCircle(cx, cy, rad, pCirc);
-            }
-            if (isSel && !isToday) {
-                pRing.setColor(pal.accent);
-                canvas.drawCircle(cx, cy, Math.min(cellW, rowH) * 0.34f, pRing);
+                pBadge.setShader(new LinearGradient(
+                        cx - badgeR, cy - badgeR, cx + badgeR, cy + badgeR,
+                        pal.gradStart, pal.gradEnd, Shader.TileMode.CLAMP));
+                pBadge.setStyle(Paint.Style.FILL);
+                canvas.drawCircle(cx, cy, badgeR, pBadge);
+                pBadge.setShader(null);
+            } else {
+                if (isSel) {
+                    pBadge.setShader(null);
+                    pBadge.setColor(pal.accentSoft);
+                    pBadge.setStyle(Paint.Style.FILL);
+                    canvas.drawCircle(cx, cy, badgeR, pBadge);
+                } else if (holiday) {
+                    pBadge.setShader(null);
+                    pBadge.setColor(pal.redSoft);
+                    pBadge.setStyle(Paint.Style.FILL);
+                    canvas.drawCircle(cx, cy, badgeR, pBadge);
+                }
+                if (isSel) {
+                    pRing.setColor(pal.accent);
+                    canvas.drawCircle(cx, cy, badgeR - density * 0.8f, pRing);
+                }
             }
 
-            pNum.setColor(isToday ? pal.onAccent
-                    : (holiday || friday) ? pal.red : pal.text);
+            // number
+            pNum.setColor(isToday ? pal.onGrad
+                    : (holiday || friday) ? pal.red
+                    : isSel ? pal.accent : pal.text);
             float tw = pNum.measureText(S.d(getContext(), jd));
-            canvas.drawText(S.d(getContext(), jd), cx - tw / 2f, cy + density * 6, pNum);
+            canvas.drawText(S.d(getContext(), jd), cx - tw / 2f, cy + density * 6.2f, pNum);
 
-            // dots
+            // indicator dots
             if (hasEvent || holiday) {
-                float dy = cy + Math.min(cellW, rowH) * 0.34f + density * 5;
-                float dotR = density * 2.2f;
+                float dy = cy + badgeR + density * 4.5f;
+                float dotR = density * 2.1f;
                 if (hasEvent) {
                     pDot.setColor(pal.accent);
                     canvas.drawCircle(cx + (holiday ? dotR * 2.4f : 0), dy, dotR, pDot);

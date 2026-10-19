@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg_fallback">#F3F5F7</color>
-    <color name="ic_launcher_background">#0B7C74</color>
+    <color name="bg_fallback">#F6F4EF</color>
+    <color name="ic_launcher_background">#0C8A82</color>
+    <color name="grad_start_solid">#0B4F5E</color>
 </resources>

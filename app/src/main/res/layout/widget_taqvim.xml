@@ -11,7 +11,7 @@
         android:id="@+id/tv_dow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#35B5A9"
+        android:textColor="#A9ECE5"
         android:textSize="12sp" />
 
     <TextView
@@ -26,7 +26,7 @@
         android:id="@+id/tv_other"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#9FB0BC"
+        android:textColor="#CFE5E3"
         android:textSize="11sp"
         android:singleLine="true" />
 
@@ -34,7 +34,7 @@
         android:id="@+id/tv_holiday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FF6B62"
+        android:textColor="#FFB4AC"
         android:textSize="11sp"
         android:singleLine="true"
         android:visibility="gone" />
@@ -43,7 +43,7 @@
         android:id="@+id/tv_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#C6D2DA"
+        android:textColor="#E4EEEC"
         android:textSize="11sp"
         android:maxLines="2"
         android:visibility="gone" />

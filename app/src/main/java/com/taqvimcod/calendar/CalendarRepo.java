@@ -20,10 +20,15 @@ import java.util.List;
  * Two-way Google Calendar integration through the system calendar provider
  * (CalendarContract). Events of the user's Google accounts are read live and
  * new / edited events are written back to the chosen Google calendar.
+ *
+ * All user-provided strings are length-clamped before writing and every
+ * provider call is guarded by an explicit permission check.
  */
 public final class CalendarRepo {
 
     private CalendarRepo() {}
+
+    private static final int MAX_TEXT = 8000;
 
     public static class Ev {
         public long eventId, calendarId;
@@ -85,6 +90,13 @@ public final class CalendarRepo {
         return cal.account == null || !cal.account.contains("@");
     }
 
+    /** defensive clamp for any text we hand to the provider */
+    private static String clamp(String s) {
+        if (s == null) return null;
+        s = s.replace("\u0000", "").trim();
+        return s.length() > MAX_TEXT ? s.substring(0, MAX_TEXT) : s;
+    }
+
     /** expanded instances overlapping [from, to) */
     public static List<Ev> instances(Context c, long from, long to) {
         List<Ev> out = new ArrayList<>();
@@ -118,7 +130,8 @@ public final class CalendarRepo {
                     ev.calName = cur.getString(gN);
                     ev.calColor = cur.getInt(gCol);
                     for (Cal wc : writable) if (wc.id == ev.calendarId) { ev.writable = true; break; }
-                    if (ev.title == null || ev.title.trim().isEmpty()) ev.title = "(بدون عنوان)";
+                    if (ev.title == null || ev.title.trim().isEmpty())
+                        ev.title = S.fa(c) ? "(بدون عنوان)" : "(No title)";
                     out.add(ev);
                 }
             }
@@ -135,8 +148,8 @@ public final class CalendarRepo {
         if (!hasPerms(c)) return false;
         ContentValues v = new ContentValues();
         v.put(Events.CALENDAR_ID, calId);
-        v.put(Events.TITLE, title);
-        if (desc != null && !desc.isEmpty()) v.put(Events.DESCRIPTION, desc);
+        v.put(Events.TITLE, clamp(title));
+        if (desc != null && !desc.isEmpty()) v.put(Events.DESCRIPTION, clamp(desc));
         v.put(Events.DTSTART, start);
         v.put(Events.DTEND, end);
         v.put(Events.ALL_DAY, allDay ? 1 : 0);
@@ -154,8 +167,8 @@ public final class CalendarRepo {
                                  long start, long end, boolean allDay) {
         if (!hasPerms(c)) return false;
         ContentValues v = new ContentValues();
-        v.put(Events.TITLE, title);
-        v.put(Events.DESCRIPTION, desc == null ? "" : desc);
+        v.put(Events.TITLE, clamp(title));
+        v.put(Events.DESCRIPTION, clamp(desc) == null ? "" : clamp(desc));
         v.put(Events.DTSTART, start);
         v.put(Events.DTEND, end);
         v.put(Events.ALL_DAY, allDay ? 1 : 0);

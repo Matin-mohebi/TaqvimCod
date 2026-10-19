@@ -4,7 +4,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 
 /**
- * Light / dark / auto theming with hand-tuned palettes (teal accent).
+ * Light / dark / auto theming.
+ * Palette: Persian turquoise (فیروزه‌ای) + lapis blue (لاجورد) + saffron.
  */
 public final class Theme {
 
@@ -14,7 +15,9 @@ public final class Theme {
 
     public static class Pal {
         public int bg, surface, surfaceAlt, divider, text, textSub,
-                   accent, accentSoft, onAccent, red, redSoft, amber, green, ripple;
+                   accent, accentSoft, onAccent,
+                   gradStart, gradEnd, onGrad, onGradSub,
+                   red, redSoft, amber, green, ripple;
         public boolean dark;
     }
 
@@ -32,19 +35,23 @@ public final class Theme {
     public static Pal light() {
         Pal p = new Pal();
         p.dark = false;
-        p.bg = 0xFFF3F5F7;
+        p.bg = 0xFFF6F4EF;
         p.surface = 0xFFFFFFFF;
-        p.surfaceAlt = 0xFFEDF1F3;
-        p.divider = 0xFFE2E7EA;
-        p.text = 0xFF1B242B;
-        p.textSub = 0xFF6E7D88;
-        p.accent = 0xFF0B7C74;
-        p.accentSoft = 0xFFDCF0EE;
+        p.surfaceAlt = 0xFFF0EDE6;
+        p.divider = 0xFFE5E1D8;
+        p.text = 0xFF242E39;
+        p.textSub = 0xFF7D8791;
+        p.accent = 0xFF0C8A82;
+        p.accentSoft = 0xFFDFF1EF;
         p.onAccent = 0xFFFFFFFF;
-        p.red = 0xFFD64545;
-        p.redSoft = 0xFFFBE9E9;
-        p.amber = 0xFFF2B705;
-        p.green = 0xFF2E9E5B;
+        p.gradStart = 0xFF0B4F5E;
+        p.gradEnd = 0xFF0E9488;
+        p.onGrad = 0xFFFFFFFF;
+        p.onGradSub = 0xB8FFFFFF;
+        p.red = 0xFFC2483F;
+        p.redSoft = 0xFFFAEAE8;
+        p.amber = 0xFFD9A441;
+        p.green = 0xFF3D8B5F;
         p.ripple = 0x33000000;
         return p;
     }
@@ -52,19 +59,23 @@ public final class Theme {
     public static Pal dark() {
         Pal p = new Pal();
         p.dark = true;
-        p.bg = 0xFF10151A;
-        p.surface = 0xFF1A2129;
-        p.surfaceAlt = 0xFF232C35;
-        p.divider = 0xFF2A343E;
-        p.text = 0xFFE7ECEF;
-        p.textSub = 0xFF94A3AE;
-        p.accent = 0xFF35B5A9;
-        p.accentSoft = 0xFF1E3A37;
-        p.onAccent = 0xFF06231F;
-        p.red = 0xFFFF6B62;
-        p.redSoft = 0xFF33201F;
-        p.amber = 0xFFF2B705;
-        p.green = 0xFF4CC97E;
+        p.bg = 0xFF0D1218;
+        p.surface = 0xFF161D26;
+        p.surfaceAlt = 0xFF202A35;
+        p.divider = 0xFF27333F;
+        p.text = 0xFFE9EEF3;
+        p.textSub = 0xFF93A1AE;
+        p.accent = 0xFF3BC9BE;
+        p.accentSoft = 0xFF173B39;
+        p.onAccent = 0xFF06201D;
+        p.gradStart = 0xFF0E3A46;
+        p.gradEnd = 0xFF0F6E68;
+        p.onGrad = 0xFFF2F7F7;
+        p.onGradSub = 0xC2FFFFFF;
+        p.red = 0xFFE5776F;
+        p.redSoft = 0xFF322020;
+        p.amber = 0xFFE0B457;
+        p.green = 0xFF55C07E;
         p.ripple = 0x33FFFFFF;
         return p;
     }

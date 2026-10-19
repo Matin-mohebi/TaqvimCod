@@ -1,0 +1,240 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+	7D7B6DEF2C0B4E47B36F6309 = TaqvimCodApp.swift /* TaqvimCodApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaqvimCodApp.swift; sourceTree = "<group>"; };
+	1711F90C3F2A45B3AB75F02C = TaqvimCodApp.swift in Sources /* TaqvimCodApp.swift */ = {isa = PBXBuildFile; fileRef = 7D7B6DEF2C0B4E47B36F6309; };
+	C3BEC014C526444B924A2AF4 = DateEngine.swift /* DateEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEngine.swift; sourceTree = "<group>"; };
+	C5A8DA0B047447E4AF442142 = DateEngine.swift in Sources /* DateEngine.swift */ = {isa = PBXBuildFile; fileRef = C3BEC014C526444B924A2AF4; };
+	06152583665F4AD3B34BD2B6 = Holidays.swift /* Holidays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Holidays.swift; sourceTree = "<group>"; };
+	7F0FE0A648874036B645E65C = Holidays.swift in Sources /* Holidays.swift */ = {isa = PBXBuildFile; fileRef = 06152583665F4AD3B34BD2B6; };
+	04D7FF2B14344F0C87627390 = Strings.swift /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+	0917F03F76B943B9B4104BD1 = Strings.swift in Sources /* Strings.swift */ = {isa = PBXBuildFile; fileRef = 04D7FF2B14344F0C87627390; };
+	EFD083B04C6E4C1990A3A037 = EventStore.swift /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
+	1525D5EDFB7543C5AEA630CF = EventStore.swift in Sources /* EventStore.swift */ = {isa = PBXBuildFile; fileRef = EFD083B04C6E4C1990A3A037; };
+	40EB333471D5400695C8A616 = HomeView.swift /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+	239C6DDD3FAA462B87360FC7 = HomeView.swift in Sources /* HomeView.swift */ = {isa = PBXBuildFile; fileRef = 40EB333471D5400695C8A616; };
+	81CED25BDCB84BCEA84C84B8 = MonthGridView.swift /* MonthGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthGridView.swift; sourceTree = "<group>"; };
+	368795AB7BFF4A69A4534AF1 = MonthGridView.swift in Sources /* MonthGridView.swift */ = {isa = PBXBuildFile; fileRef = 81CED25BDCB84BCEA84C84B8; };
+	C86DD9B01B5F48AC9BC1AEAB = EventEditorView.swift /* EventEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventEditorView.swift; sourceTree = "<group>"; };
+	DF0C3A5BF8C34E34BE8188D0 = EventEditorView.swift in Sources /* EventEditorView.swift */ = {isa = PBXBuildFile; fileRef = C86DD9B01B5F48AC9BC1AEAB; };
+	588FDB23EED24210800E58A3 = SettingsView.swift /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+	48B544D8082C4F8CB69092D9 = SettingsView.swift in Sources /* SettingsView.swift */ = {isa = PBXBuildFile; fileRef = 588FDB23EED24210800E58A3; };
+	FE37559CD3264250B21E5E88 = Vazirmatn-Regular.ttf /* Vazirmatn-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Vazirmatn-Regular.ttf; path = Fonts/Vazirmatn-Regular.ttf; sourceTree = "<group>"; };
+	2E76EE7AA1C24D67A980F070 = Vazirmatn-Regular.ttf in Resources /* Vazirmatn-Regular.ttf */ = {isa = PBXBuildFile; fileRef = FE37559CD3264250B21E5E88; };
+	646FBBD0516B4C1FBD9740B6 = Vazirmatn-Medium.ttf /* Vazirmatn-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Vazirmatn-Medium.ttf; path = Fonts/Vazirmatn-Medium.ttf; sourceTree = "<group>"; };
+	C755F0FC6C784473B5C2788D = Vazirmatn-Medium.ttf in Resources /* Vazirmatn-Medium.ttf */ = {isa = PBXBuildFile; fileRef = 646FBBD0516B4C1FBD9740B6; };
+	E03E588D9C924B388E8A186E = Vazirmatn-SemiBold.ttf /* Vazirmatn-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Vazirmatn-SemiBold.ttf; path = Fonts/Vazirmatn-SemiBold.ttf; sourceTree = "<group>"; };
+	20C15333A4C44E62BF9F0DFC = Vazirmatn-SemiBold.ttf in Resources /* Vazirmatn-SemiBold.ttf */ = {isa = PBXBuildFile; fileRef = E03E588D9C924B388E8A186E; };
+	26DFC1C5FD624D958FD7D6DD = Vazirmatn-Bold.ttf /* Vazirmatn-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Vazirmatn-Bold.ttf; path = Fonts/Vazirmatn-Bold.ttf; sourceTree = "<group>"; };
+	5BEA85AC740546C7A889F951 = Vazirmatn-Bold.ttf in Resources /* Vazirmatn-Bold.ttf */ = {isa = PBXBuildFile; fileRef = 26DFC1C5FD624D958FD7D6DD; };
+	B98B0462C4F14EFCA13F5228 = Assets.xcassets /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+	F17A505BDAE94A0B93F64C6F = Assets.xcassets in Resources /* Assets.xcassets */ = {isa = PBXBuildFile; fileRef = B98B0462C4F14EFCA13F5228; };
+	B3AE8EC877F64E1B8433D92E = Info.plist /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+	26AA587EDE1846F8914C6056 = TaqvimCod.app /* TaqvimCod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TaqvimCod.app; sourceTree = BUILT_PRODUCTS_DIR; };
+	1C6FBBABFA6D483193322B70 = Sources /* Swift sources */ = {
+	isa = PBXGroup;
+	children = (
+		7D7B6DEF2C0B4E47B36F6309 /* swift */,
+		C3BEC014C526444B924A2AF4 /* swift */,
+		06152583665F4AD3B34BD2B6 /* swift */,
+		04D7FF2B14344F0C87627390 /* swift */,
+		EFD083B04C6E4C1990A3A037 /* swift */,
+		40EB333471D5400695C8A616 /* swift */,
+		81CED25BDCB84BCEA84C84B8 /* swift */,
+		C86DD9B01B5F48AC9BC1AEAB /* swift */,
+		588FDB23EED24210800E58A3 /* swift */,
+);
+	name = Sources;
+	sourceTree = "<group>";
+};
+	640D512014264CEC9E2FA239 = Resources /* Resources */ = {
+	isa = PBXGroup;
+	children = (
+		B98B0462C4F14EFCA13F5228 /* assets */,
+		FE37559CD3264250B21E5E88 /* font */,
+		646FBBD0516B4C1FBD9740B6 /* font */,
+		E03E588D9C924B388E8A186E /* font */,
+		26DFC1C5FD624D958FD7D6DD /* font */,
+);
+	name = Resources;
+	sourceTree = "<group>";
+};
+	DC5B0C0152704A1AB0107E4E = TaqvimCod /* TaqvimCod */ = {
+	isa = PBXGroup;
+	children = (
+		1C6FBBABFA6D483193322B70 /* sources */,
+		640D512014264CEC9E2FA239 /* resources */,
+		B3AE8EC877F64E1B8433D92E /* Info.plist */,
+);
+	path = TaqvimCod;
+	sourceTree = "<group>";
+};
+	FD6656039DA44E548802364D = Products /* Products */ = {
+	isa = PBXGroup;
+	children = (
+		26AA587EDE1846F8914C6056 /* app */,
+);
+	name = Products;
+	sourceTree = "<group>";
+};
+	99F66272A7B442F9A72916B5 = /* Main group */ = {
+	isa = PBXGroup;
+	children = (
+		DC5B0C0152704A1AB0107E4E /* app */,
+		FD6656039DA44E548802364D /* products */,
+);
+	sourceTree = "<group>";
+};
+	7E4CA7FC093C454A93CA1653 = Sources /* Sources */ = {
+	isa = PBXSourcesBuildPhase;
+	buildActionMask = 2147483647;
+	files = (
+		1711F90C3F2A45B3AB75F02C /* swift */,
+		C5A8DA0B047447E4AF442142 /* swift */,
+		7F0FE0A648874036B645E65C /* swift */,
+		0917F03F76B943B9B4104BD1 /* swift */,
+		1525D5EDFB7543C5AEA630CF /* swift */,
+		239C6DDD3FAA462B87360FC7 /* swift */,
+		368795AB7BFF4A69A4534AF1 /* swift */,
+		DF0C3A5BF8C34E34BE8188D0 /* swift */,
+		48B544D8082C4F8CB69092D9 /* swift */,
+);
+	runOnlyForDeploymentPostprocessing = 0;
+};
+	1A6872B8CAF54AC4BDD146E1 = Resources /* Resources */ = {
+	isa = PBXResourcesBuildPhase;
+	buildActionMask = 2147483647;
+	files = (
+		F17A505BDAE94A0B93F64C6F /* assets */,
+		2E76EE7AA1C24D67A980F070 /* font */,
+		C755F0FC6C784473B5C2788D /* font */,
+		20C15333A4C44E62BF9F0DFC /* font */,
+		5BEA85AC740546C7A889F951 /* font */,
+);
+	runOnlyForDeploymentPostprocessing = 0;
+};
+	AD14A6EB596C4DB084C920C5 = Frameworks /* Frameworks */ = {
+	isa = PBXFrameworksBuildPhase;
+	buildActionMask = 2147483647;
+	files = (
+);
+	runOnlyForDeploymentPostprocessing = 0;
+};
+	10E974436DDA4BD1A5EBC9D5 = Debug /* Debug */ = {
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+		ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+		CODE_SIGN_STYLE = Automatic;
+		CURRENT_PROJECT_VERSION = 2;
+		INFOPLIST_FILE = TaqvimCod/Info.plist;
+		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim Kod";
+		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+		IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+		LD_RUNPATH_SEARCH_PATHS = (
+			"$(inherited)",
+			"@executable_path/Frameworks",
+		);
+		MARKETING_VERSION = 1.1.0;
+		PRODUCT_BUNDLE_IDENTIFIER = com.taqvimcod.calendar;
+		PRODUCT_NAME = "$(TARGET_NAME)";
+		SWIFT_EMIT_LOC_STRINGS = NO;
+		SWIFT_VERSION = 5.9;
+		TARGETED_DEVICE_FAMILY = "1,2";
+	};
+	name = Debug;
+};
+	53CE40DF9E794356A8A960DC = Release /* Release */ = {
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+		ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+		CODE_SIGN_STYLE = Automatic;
+		CURRENT_PROJECT_VERSION = 2;
+		INFOPLIST_FILE = TaqvimCod/Info.plist;
+		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim Kod";
+		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+		IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+		LD_RUNPATH_SEARCH_PATHS = (
+			"$(inherited)",
+			"@executable_path/Frameworks",
+		);
+		MARKETING_VERSION = 1.1.0;
+		PRODUCT_BUNDLE_IDENTIFIER = com.taqvimcod.calendar;
+		PRODUCT_NAME = "$(TARGET_NAME)";
+		SWIFT_EMIT_LOC_STRINGS = NO;
+		SWIFT_VERSION = 5.9;
+		TARGETED_DEVICE_FAMILY = "1,2";
+	};
+	name = Release;
+};
+	A82C4454898B46D58E0083E4 = /* Build configuration list for PBXNativeTarget "TaqvimCod" */ = {
+	isa = XCConfigurationList;
+	buildConfigurations = (
+		10E974436DDA4BD1A5EBC9D5 /* Debug */,
+		53CE40DF9E794356A8A960DC /* Release */,
+);
+	defaultConfigurationIsVisible = 0;
+	defaultConfigurationName = Release;
+};
+	5BF254E97D2F462E918C9673 = /* Build configuration list for PBXProject "TaqvimCod" */ = {
+	isa = XCConfigurationList;
+	buildConfigurations = (
+		10E974436DDA4BD1A5EBC9D5 /* Debug */,
+		53CE40DF9E794356A8A960DC /* Release */,
+);
+	defaultConfigurationIsVisible = 0;
+	defaultConfigurationName = Release;
+};
+	7610C823E87B4DD7A7E6BFD7 = TaqvimCod /* TaqvimCod */ = {
+	isa = PBXNativeTarget;
+	buildConfigurationList = A82C4454898B46D58E0083E4 /* Debug */;
+	buildPhases = (
+		7E4CA7FC093C454A93CA1653 /* Sources */,
+		AD14A6EB596C4DB084C920C5 /* Frameworks */,
+		1A6872B8CAF54AC4BDD146E1 /* Resources */,
+	);
+	buildRules = ();
+	dependencies = ();
+	name = TaqvimCod;
+	packageProductDependencies = ();
+	productName = TaqvimCod;
+	productReference = 26AA587EDE1846F8914C6056 /* app */;
+	productType = "com.apple.product-type.application";
+};
+	D2F529DDA5344B7E917AC118 = TaqvimCod /* TaqvimCod project */ = {
+	isa = PBXProject;
+	attributes = {
+		BuildIndependentTargetsInParallel = 1;
+		LastSwiftUpdateCheck = 1500;
+		LastUpgradeCheck = 1500;
+		TargetAttributes = {
+			7610C823E87B4DD7A7E6BFD7 = {
+				CreatedOnToolsVersion = 15.0;
+			};
+		};
+	};
+	buildConfigurationList = 5BF254E97D2F462E918C9673 /* Debug */;
+	compatibilityVersion = "Xcode 14.0";
+	developmentRegion = fa;
+	hasScannedForEncodings = 0;
+	knownRegions = (
+		fa,
+		en,
+		Base,
+	);
+	mainGroup = 99F66272A7B442F9A72916B5 /* main */;
+	productRefGroup = FD6656039DA44E548802364D /* products */;
+	projectDirPath = "";
+	projectRoot = "";
+	targets = (
+		7610C823E87B4DD7A7E6BFD7 /* TaqvimCod */,
+	);
+};
+	};
+	rootObject = D2F529DDA5344B7E917AC118 /* project */;
+}

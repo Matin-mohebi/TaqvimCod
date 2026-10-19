@@ -3,7 +3,7 @@ package com.taqvimcod.calendar;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.text.util.Linkify;
@@ -18,12 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
-/** Dialogs: event form, settings, about & contact. */
+/** Dialogs: event form, settings (incl. security), about & contact. */
 public final class UiDialogs {
 
     private UiDialogs() {}
@@ -57,6 +58,13 @@ public final class UiDialogs {
         box.addView(v);
     }
 
+    private static View divider(Context c, Theme.Pal pal) {
+        View v = new View(c);
+        v.setBackgroundColor(pal.divider);
+        v.setLayoutParams(new LinearLayout.LayoutParams(-1, Math.max(1, dp(c, 1))));
+        return v;
+    }
+
     private static Context themed(MainActivity act) {
         return new android.view.ContextThemeWrapper(act,
                 act.pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light);
@@ -65,11 +73,18 @@ public final class UiDialogs {
     private static Typeface reg(Context c) { return MonthView.Font.get(c, MonthView.Font.REGULAR); }
     private static Typeface bold(Context c) { return MonthView.Font.get(c, MonthView.Font.BOLD); }
 
+    private static String version(Context c) {
+        try {
+            return c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            return "1.1.0";
+        }
+    }
+
     // ================= event form =================
     public static void eventForm(MainActivity act, CalendarRepo.Ev edit) {
         Context c = act;
         Theme.Pal pal = act.pal;
-        boolean fa = act.fa;
 
         LinearLayout b = box(c, pal);
         EditText etTitle = new EditText(c);
@@ -110,8 +125,6 @@ public final class UiDialogs {
         TextView tvStart = chip(c, pal, "", pal.surfaceAlt, pal.text);
         TextView tvEnd = chip(c, pal, "", pal.surfaceAlt, pal.text);
         TextView tvSep = label(c, pal, "—", 13, pal.textSub, false);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         timeRow.addView(label(c, pal, S.t(c, "start_time") + ": ", 13, pal.textSub, false));
         timeRow.addView(tvStart);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(
@@ -134,9 +147,8 @@ public final class UiDialogs {
                 (tp, h, m) -> { eh[0] = h; em[0] = m; updTimes.run(); }, eh[0], em[0], true).show();
         tvStart.setOnClickListener(pickStart);
         tvEnd.setOnClickListener(pickEnd);
-        cbAll.setOnCheckedChangeListener((btn, on) -> {
-            timeRow.setVisibility(on ? View.GONE : View.VISIBLE);
-        });
+        cbAll.setOnCheckedChangeListener((btn, on) ->
+                timeRow.setVisibility(on ? View.GONE : View.VISIBLE));
         if (edit != null && edit.allDay) timeRow.setVisibility(View.GONE);
 
         // target calendar spinner
@@ -257,7 +269,7 @@ public final class UiDialogs {
             if (m != Prefs.theme(c)) { Prefs.theme(c, m); act.recreate(); }
         });
         b.addView(rgTheme);
-        gap(c, b, 14);
+        gap(c, b, 12);
 
         b.addView(label(c, pal, S.t(c, "language"), 14, pal.text, true));
         gap(c, b, 6);
@@ -280,7 +292,7 @@ public final class UiDialogs {
             if (!l.equals(Prefs.lang(c))) { Prefs.lang(c, l); act.recreate(); }
         });
         b.addView(rgLang);
-        gap(c, b, 14);
+        gap(c, b, 12);
 
         b.addView(label(c, pal, S.t(c, "hijri_adjust"), 14, pal.text, true));
         gap(c, b, 6);
@@ -306,7 +318,40 @@ public final class UiDialogs {
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> p) {}
         });
+        gap(c, b, 12);
+
+        // ---- security section ----
+        b.addView(divider(c, pal));
+        gap(c, b, 12);
+        b.addView(label(c, pal, S.t(c, "security"), 14, pal.text, true));
+        gap(c, b, 2);
+
+        LinearLayout secureRow = new LinearLayout(c);
+        secureRow.setOrientation(LinearLayout.VERTICAL);
+        Switch sw = new Switch(c);
+        sw.setText(S.t(c, "secure_screen"));
+        sw.setTextColor(pal.text);
+        sw.setTextSize(14);
+        sw.setTypeface(reg(c));
+        sw.setChecked(Prefs.secureScreen(c));
+        sw.setOnCheckedChangeListener((btn, on) -> Prefs.secureScreen(c, on));
+        secureRow.addView(sw);
+        secureRow.addView(label(c, pal, S.t(c, "secure_screen_note"), 11, pal.textSub, false));
+        b.addView(secureRow);
+        gap(c, b, 10);
+
+        TextView privacyBtn = chip(c, pal, "🛡 " + S.t(c, "privacy_title"), pal.accentSoft, pal.accent);
+        privacyBtn.setOnClickListener(v -> privacy(act));
+        b.addView(privacyBtn, new LinearLayout.LayoutParams(-2, -2));
+        gap(c, b, 10);
+
+        TextView playBtn = chip(c, pal, "▶ " + S.t(c, "play_protect_title"), pal.surfaceAlt, pal.text);
+        playBtn.setOnClickListener(v -> playProtectFaq(act));
+        b.addView(playBtn, new LinearLayout.LayoutParams(-2, -2));
         gap(c, b, 14);
+
+        b.addView(divider(c, pal));
+        gap(c, b, 12);
 
         TextView aboutBtn = chip(c, pal, S.t(c, "about"), pal.accentSoft, pal.accent);
         aboutBtn.setOnClickListener(v -> { UiDialogs.about(act); });
@@ -319,6 +364,34 @@ public final class UiDialogs {
                 .show();
     }
 
+    // ================= privacy & play protect =================
+    public static void privacy(MainActivity act) {
+        Context c = act;
+        Theme.Pal pal = act.pal;
+        LinearLayout b = box(c, pal);
+        TextView tv = label(c, pal, S.t(c, "privacy_text"), 13, pal.text, false);
+        b.addView(tv);
+        gap(c, b, 12);
+        b.addView(label(c, pal, "🔒 " + S.t(c, "slogan"), 12, pal.accent, true));
+        new AlertDialog.Builder(themed(act))
+                .setTitle(S.t(c, "privacy_title"))
+                .setView(b)
+                .setPositiveButton(S.t(c, "ok"), null)
+                .show();
+    }
+
+    public static void playProtectFaq(MainActivity act) {
+        Context c = act;
+        Theme.Pal pal = act.pal;
+        LinearLayout b = box(c, pal);
+        b.addView(label(c, pal, S.t(c, "play_protect_text"), 13, pal.text, false));
+        new AlertDialog.Builder(themed(act))
+                .setTitle(S.t(c, "play_protect_title"))
+                .setView(b)
+                .setPositiveButton(S.t(c, "understood"), null)
+                .show();
+    }
+
     // ================= about & contact =================
     public static void about(MainActivity act) {
         Context c = act;
@@ -328,9 +401,11 @@ public final class UiDialogs {
         TextView name = label(c, pal, S.t(c, "app_name"), 22, pal.accent, true);
         b.addView(name);
         gap(c, b, 2);
-        b.addView(label(c, pal, S.t(c, "version") + ": " + S.d(c, "1.0.0"), 12, pal.textSub, false));
+        b.addView(label(c, pal, S.t(c, "version") + ": " + S.d(c, version(c)), 12, pal.textSub, false));
         gap(c, b, 8);
         b.addView(label(c, pal, S.t(c, "desc_line"), 13, pal.text, false));
+        gap(c, b, 12);
+        b.addView(label(c, pal, "🔒 " + S.t(c, "privacy_text"), 11.5f, pal.textSub, false));
         gap(c, b, 14);
 
         LinearLayout devRow = new LinearLayout(c);

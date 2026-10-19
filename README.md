@@ -2,119 +2,100 @@
 
 <div dir="rtl">
 
-**تقویم ایرانی (شمسی) با همگام‌سازی لحظه‌ای Google Calendar — دقیق، سریع و دوزبانه**
+**تقویم ایرانی (شمسی) با همگام‌سازی زنده Google Calendar — دقیق • امن • زیبا**
 
-اپ اندروید تقویم فارسی با پشتیبانی کامل از تقویم گوگل: رویدادهای اکانت گوگل‌ت به‌صورت **لحظه‌ای** داخل تقویم شمسی نمایش داده می‌شن و می‌تونی از داخل خود اپ رویداد **اضافه، ویرایش یا حذف** کنی — تغییرات مستقیم روی تقویم گوگلت اعمال می‌شه.
+اپ تقویم فارسی برای **اندروید و آیفون** با پشتیبانی کامل از تقویم گوگل: رویدادهای اکانت گوگل‌ت به‌صورت **لحظه‌ای** داخل تقویم شمسی نمایش داده می‌شن و می‌تونی از داخل خود اپ رویداد **اضافه، ویرایش یا حذف** کنی — تغییرات مستقیم روی تقویم گوگلت اعمال می‌شه.
 
-## ✨ امکانات
+</div>
+
+**Iranian (Jalali) calendar with live Google Calendar sync for Android & iOS — accurate, secure, beautiful.**
+
+## ✨ امکانات / Features
 
 - 🗓 **تقویم شمسی (جلالی) دقیق** — الگوریتم نجومی Borkowski با پشتیبانی صحیح از سال‌های کبیسه
 - 🔄 **همگام‌سازی دوطرفه با تقویم گوگل** — نمایش زنده، افزودن، ویرایش و حذف رویداد (بدون سرور واسط؛ اتصال مستقیم به اکانت گوگل گوشی)
 - ⚡ **به‌روزرسانی لحظه‌ای** — هر تغییری در تقویم گوگل (از هر دستگاهی) بلافاصله داخل اپ ظاهر می‌شه
 - 🇮🇷 **تعطیلات رسمی و مناسبت‌های ایران** — تعطیلات شمسی و قمری با هایلایت قرمز
-- ☪ **تاریخ قمری (هجری)** کنار شمسی و میلادی + تنظیم تصحیح (پیش‌فرض مناسب ایران: -۱)
-- ⏳ **شمارش معکوس** تا تعطیلی بعدی (مثلاً «۲۵ روز تا عید نوروز»)
-- 📱 **ویجت صفحه اصلی** — تاریخ امروز، تعطیلی و رویداد بعدی
-- 🌗 **تم روشن + تاریک + خودکار** (بر اساس تم سیستم)
-- 🌐 **دوزبانه** فارسی / English با اعداد فارسی
-- 🖋 **فونت وزیرمتن** و طراحی RTL کامل
-- 👤 بخش **درباره و تماس با ما**
+- ☪ **تاریخ قمری (هجری)** کنار شمسی و میلادی + تنظیم تصحیح (پیش‌فرض مناسب ایران: ‎-۱)
+- ⏳ **کارت شمارش معکوس** تا تعطیلی بعدی (مثلاً «۲۵ روز تا عید نوروز»)
+- 📱 **ویجت صفحه اصلی** (اندروید) — تاریخ امروز، تعطیلی و رویداد بعدی
+- 🌗 **تم روشن + تاریک + خودکار** — پالت فیروزه‌ای و لاجوردی با هدر گرادیانی
+- 🌐 **دوزبانه** فارسی / English با اعداد فارسی و فونت وزیرمتن، طراحی RTL کامل
+- 🔒 **امنیت بالا** (جدید در نسخه ۱.۱.۰):
+  - **بدون دسترسی اینترنت** — داده‌ها هرگز از گوشی خارج نمی‌شن
+  - تنظیمات با **AES-256-GCM + Android Keystore** رمزنگاری می‌شن
+  - قابلیت **جلوگیری از اسکرین‌شات** (FLAG_SECURE) در تنظیمات
+  - غیرفعال‌بودن پشتیبان‌گیری ابری (allowBackup = false)
+  - کد Release با **R8 مبهم‌سازی** می‌شه (obfuscation + shrinking)
+- 👤 بخش **درباره و تماس با ما** + راهنمای حریم خصوصی
 
-## 📲 نصب APK
+## 📲 نصب / Install (Android)
 
 ### راه ۱: دانلود از Releases
-آخرین نسخه از بخش [Releases](../../releases) همین ریپو رو دانلود و نصب کن (فایل `taqvim-kod-vX.X.X-release.apk`).
+آخرین نسخه از بخش [Releases](../../releases) رو دانلود و نصب کن (`TaqvimCod-vX.X.X-release.apk`).
 
 ### راه ۲: بیلد خودکار با GitHub Actions
-زبونه **Actions** رو باز کن → ورک‌فلو **Build APK** → دانلود آرتیفکت `TaqvimCod-APK` (شامل نسخه debug و release).
+زبونه **Actions** → ورک‌فلو **Build** → دانلود آرتیفکت `TaqvimCod-APK`.
 
-> هنگام نصب، پیام «نصب از منابع ناشناس» طبیعیه؛ برای نمایش و ثبت رویدادها، اجازه دسترسی تقویم رو تأیید کن.
+<div dir="rtl">
 
-## 🛠 بیلد از سورس
+### ⚠️ پیام «Google Play Protect»؟
+اگه موقع نصب پیام هشدار Play Protect دیدی نگران نباش — این پیام برای **هر** اپی که خارج از فروشگاه گوگل نصب می‌شه نمایش داده می‌شه و ربطی به خطرناک بودن برنامه نداره. روی پیام بزن و **«نصب در هر صورت»** رو انتخاب کن. توضیح کامل: [راهنمای فارسی](docs/PLAY-PROTECT-FA.md)
 
-پیش‌نیازها: **JDK 17+** و **Android SDK (پلتفرم 34)**
+</div>
+
+> برای نمایش و ثبت رویدادها، اجازه دسترسی تقویم رو تأیید کن.
+
+## 🍎 نسخه آیفون / iOS
+
+اپ iOS با **SwiftUI** در همین ریپو موجوده: [`ios/`](ios/README.md)
+- همون موتور دقیق تقویم، همون تعطیلات، همون طراحی
+- همگام‌سازی با تقویم گوگل از طریق EventKit خود iOS (اکانت گوگل داخل تنظیمات آیفون)
+- نحوه بیلد: [راهنمای iOS](ios/README.md) (نیاز به مک + Xcode 15+)
+
+## 🛠 بیلد از سورس / Build from source
+
+**Android:** پیش‌نیازها JDK 17+ و Android SDK (پلتفرم 35)
 
 ```bash
 git clone https://github.com/Matin-mohebi/TaqvimCod.git
 cd TaqvimCod
-./gradlew assembleDebug     # نسخه تست
-./gradlew assembleRelease   # نسخه نهایی (اگر keystore موجود باشه امضا می‌شه)
+./gradlew assembleDebug      # نسخه تست
+./gradlew assembleRelease    # نسخه امضاشده (اگه keystore موجود باشه)
 ```
 
-خروجی: `app/build/outputs/apk/`
+**iOS:** باز کن `ios/TaqvimCod.xcodeproj` در Xcode 15+ → Run
 
-یا کل پروژه رو مستقیم در **Android Studio** باز کن.
+## 🔐 امنیت و حریم خصوصی / Security & Privacy
 
-## 🔐 امضای نسخه Release
+<div dir="rtl">
 
-فایل `taqvimcod.keystore` در ریپو **commit نمی‌شه** (به‌دلایل امنیتی). برای ساخت مجدد keystore:
-
-```bash
-keytool -genkeypair -keystore taqvimcod.keystore -alias taqvimcod \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -storepass "TaqvimKod@1403" -dname "CN=Taqvim Kod,O=TaqvimCod,C=IR"
-```
-
-فایل رو کنار `build.gradle` ریشه قرار بده؛ بیلد release خودکار امضا می‌شه. (پسورد فعلی: `TaqvimKod@1403` — برای انتشار عمومی حتماً عوضش کن.)
-
-## 🧭 معماری و دقت
-
-| بخش | توضیح |
-|---|---|
-| تبدیل جلالی | الگوریتم نجومی Borkowski (پورت `jalaali-js`) — دقیق در محدوده بسیار وسیع سال‌ها |
-| تاریخ قمری | تقویم جدولی (Kuwaiti/Fourmilab) + تنظیم تصحیح ‎-۲…+۲ روز |
-| اتصال گوگل | `CalendarContract` اندروید — رویدادهای اکانت گوگل سینک‌شده روی گوشی، بدون نیاز به سرور یا OAuth API |
-| سینک لحظه‌ای | `ContentObserver` روی provider تقویم؛ هر تغییر (گوشی/سایت/بقیه دستگاه‌ها) فوراً رفرش می‌شه |
-| زبان | Java خالص + Android SDK (بدون هیچ وابستگی خارجی) — APK سبک (~۱ مگابایت) |
-
-### ساختار پروژه
-
-```
-app/src/main/java/com/taqvimcod/calendar/
-├── Dates.java          # تبدیل دقیق جلالی/قمری/میلادی + JDN
-├── Holidays.java       # تعطیلات رسمی و مناسبت‌های ایران
-├── CalendarRepo.java   # خواندن/نوشتن تقویم گوگل
-├── MonthView.java      # نمای ماه (Canvas, RTL, Swipe)
-├── MainActivity.java   # صفحه اصلی + سینک لحظه‌ای
-├── UiDialogs.java      # فرم رویداد، تنظیمات، تماس با ما
-├── WidgetProvider.java # ویجت صفحه اصلی
-├── S.java              # متن‌های دوزبانه + اعداد فارسی
-├── Theme.java          # تم روشن/تاریک/خودکار
-└── Prefs.java          # تنظیمات
-```
-
-### مجوزهای موردنیاز
-
-- `READ_CALENDAR` / `WRITE_CALENDAR` — نمایش و ثبت رویدادهای تقویم گوگل
-- `RECEIVE_BOOT_COMPLETED` — به‌روزرسانی ویجت بعد از ری‌استارت گوشی
-
-## 👤 تماس با ما
-
-- 🌐 **وب‌سایت‌ها:** [matinzeus.ir](https://matinzeus.ir) · [matin-wp-pro.ir](https://matin-wp-pro.ir) · [dyno-tuning-znj.ir](https://dyno-tuning-znj.ir) · [elambar-zanjan.ir](https://elambar-zanjan.ir)
-- 📞 **تلفن:** [09195394891](tel:09195394891)
-- 📷 **اینستاگرام:** [@matin_web_site](https://instagram.com/matin_web_site)
+تقویم کد **هیچ مجوز اینترنتی ندارد**؛ بنابراین از نظر فنی غیرممکنه که اطلاعاتت جایی آپلود بشه. رویدادها فقط بین اپ و تقویم خودِ گوشی (اکانت گوگل خودت) جابه‌جا می‌شن. جزئیات کامل: [PRIVACY.md](PRIVACY.md) • گزارش آسیب‌پذیری: [SECURITY.md](SECURITY.md)
 
 </div>
 
----
+Taqvim Kod has **no INTERNET permission** — your data physically cannot leave the device.
+Details: [PRIVACY.md](PRIVACY.md) • Responsible disclosure: [SECURITY.md](SECURITY.md)
 
-# Taqvim Kod (English)
+## 📋 تغییرات نسخه‌ها / Changelog
 
-**Iranian Jalali calendar app for Android with real-time two-way Google Calendar sync.**
+- **v1.1.0** — طراحی کاملاً جدید (هدر گرادیانی، کارت‌های شیک)، امنیت بالا: رمزنگاری Keystore، ضداسکرین‌شات، R8، targetSdk 35، راهنمای Play Protect، **افزودن اپ iOS (SwiftUI)**
+- **v1.0.0** — نسخه اولیه اندروید
 
-- ✅ Astronomically accurate Jalali conversion (Borkowski algorithm)
-- ✅ Two-way Google Calendar sync via `CalendarContract` — view, add, edit, delete events; changes land in your Google account instantly
-- ✅ Live updates via `ContentObserver` (no polling)
-- ✅ Iranian official holidays & occasions (solar + lunar), red highlights
-- ✅ Hijri date with adjustable correction (default -1 for Iran)
-- ✅ Countdown to the next holiday
-- ✅ Home-screen widget (today's date, holiday, next event)
-- ✅ Light / Dark / Auto theme, Persian + English UI with Persian digits, Vazirmatn font, full RTL
-- ✅ Zero third-party dependencies — tiny ~1 MB APK
+## 👤 توسعه‌دهنده / Developer
 
-**Build:** JDK 17+ and Android SDK 34 → `./gradlew assembleDebug` (or open in Android Studio).
-**Download:** check the [Releases](../../releases) or the **Build APK** GitHub Action artifact.
+**Matin**
+- 🌐 https://matinzeus.ir
+- 🌐 https://matin-wp-pro.ir
+- 🌐 https://dyno-tuning-znj.ir
+- 🌐 https://elambar-zanjan.ir
+- 📞 09195394891
+- 📷 Instagram: [@matin_web_site](https://instagram.com/matin_web_site)
 
-**Contact:** [matinzeus.ir](https://matinzeus.ir) · Phone [09195394891](tel:09195394891) · Instagram [@matin_web_site](https://instagram.com/matin_web_site)
+<div dir="rtl">
 
-License: [MIT](LICENSE) © Matin
+## 📄 لایسنس / License
+
+MIT — جزئیات در [LICENSE](LICENSE)
+
+</div>
