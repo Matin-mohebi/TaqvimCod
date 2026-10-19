@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tv_dow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#35B5A9"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_jalali"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#9FB0BC"
+        android:textSize="11sp"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/tv_holiday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF6B62"
+        android:textSize="11sp"
+        android:singleLine="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#C6D2DA"
+        android:textSize="11sp"
+        android:maxLines="2"
+        android:visibility="gone" />
+</LinearLayout>

@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+def keystoreFile = rootProject.file("taqvimcod.keystore")
+
+android {
+    namespace 'com.taqvimcod.calendar'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.taqvimcod.calendar"
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    if (keystoreFile.exists()) {
+        signingConfigs {
+            release {
+                storeFile keystoreFile
+                storePassword "TaqvimKod@1403"
+                keyAlias "taqvimcod"
+                keyPassword "TaqvimKod@1403"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (keystoreFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// Zero external dependencies — pure Android SDK
+dependencies {
+}
