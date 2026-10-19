@@ -24,7 +24,7 @@ struct TaqvimCodApp: App {
                     UserDefaults.standard.register(defaults: [
                         "lang": "fa", "theme": 0, "hijri_adj": -1
                     ])
-                    EventStore.shared.requestAccess()
+                    EventStore.shared.requestAccessAsync()
                 }
         }
     }

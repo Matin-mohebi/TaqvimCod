@@ -157,7 +157,7 @@ enum DateEngine {
     }
 
     /// JDN of the local day containing `date`
-    static func jdn(of date: Date) -> DateEngine.GDate {
+    static func jdn(of date: Date) -> GDate {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone.current
         let comp = cal.dateComponents([.year, .month, .day], from: date)

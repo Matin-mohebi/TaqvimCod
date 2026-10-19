@@ -303,7 +303,7 @@ struct HomeView: View {
             Text(L.t("perm_text"))
                 .font(.custom(FontNames.regular, size: 12))
                 .foregroundColor(c.textSub)
-            Button { EventStore.shared.requestAccess() } label: {
+            Button { EventStore.shared.requestAccessAsync() } label: {
                 Text(L.t("grant"))
                     .font(.custom(FontNames.medium, size: 12.5))
                     .foregroundColor(.white)

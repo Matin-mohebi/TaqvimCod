@@ -11,6 +11,11 @@ final class EventStore: ObservableObject {
     @Published var authorized = false
     @Published var calendars: [EKCalendar] = []
 
+    /// synchronous convenience for SwiftUI callbacks (onAppear / Button action)
+    func requestAccessAsync() {
+        Task { await requestAccess() }
+    }
+
     /// iOS 17 changed the API; support both.
     func requestAccess() async {
         let granted: Bool

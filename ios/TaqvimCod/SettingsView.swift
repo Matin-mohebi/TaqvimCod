@@ -72,7 +72,7 @@ struct AboutView: View {
                     Text(L.t("app_name"))
                         .font(.custom(FontNames.bold, size: 26))
                         .foregroundColor(c.accent)
-                    Text("Version 1.1.0 (iOS)")
+                    Text("Version 1.1.1 (iOS)")
                         .font(.custom(FontNames.regular, size: 12))
                         .foregroundColor(c.textSub)
                     Text(L.t("desc_line"))
