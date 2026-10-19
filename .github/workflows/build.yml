@@ -48,7 +48,7 @@ jobs:
           xcodebuild -project ios/TaqvimCod.xcodeproj -target TaqvimCod \
             -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
-            SYMROOT="$PWD/build" \
+            SYMROOT="$PWD/ios/build" \
             build CODE_SIGNING_ALLOWED=NO
 
       - name: Upload iOS build artifacts
