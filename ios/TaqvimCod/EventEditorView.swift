@@ -87,7 +87,7 @@ struct EventEditorView: View {
                 Button(L.t("ok"), role: .cancel) {}
             }
         }
-        .environment(\.layoutDirection, lang == "en" ? .ltr : .rtl)
+        .environment(\.layoutDirection, lang == "en" ? .leftToRight : .rightToLeft)
         .onAppear { load() }
     }
 

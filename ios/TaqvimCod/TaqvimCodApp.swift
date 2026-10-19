@@ -18,7 +18,7 @@ struct TaqvimCodApp: App {
         WindowGroup {
             HomeView()
                 .environmentObject(eventStore)
-                .environment(\.layoutDirection, lang == "en" ? .ltr : .rtl)
+                .environment(\.layoutDirection, lang == "en" ? .leftToRight : .rightToLeft)
                 .preferredColorScheme(preferredScheme)
                 .onAppear {
                     UserDefaults.standard.register(defaults: [

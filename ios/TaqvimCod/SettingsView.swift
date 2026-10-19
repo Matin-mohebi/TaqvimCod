@@ -122,7 +122,11 @@ struct AboutView: View {
 
     private func link(_ url: String) -> some View {
         if let u = URL(string: url) {
-            return AnyView(Link(destination: u)
+            return AnyView(Link(destination: u) {
+                    Text(url)
+                        .font(.custom(FontNames.regular, size: 13))
+                        .foregroundColor(c.accent)
+                }
                 .font(.custom(FontNames.regular, size: 13))
                 .foregroundColor(c.accent))
         }

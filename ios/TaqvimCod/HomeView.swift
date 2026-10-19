@@ -79,15 +79,15 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showEditor) {
             EventEditorView(editing: editingEvent, day: selectedJDate)
-                .environment(\.layoutDirection, lang == "en" ? .ltr : .rtl)
+                .environment(\.layoutDirection, lang == "en" ? .leftToRight : .rightToLeft)
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
-                .environment(\.layoutDirection, lang == "en" ? .ltr : .rtl)
+                .environment(\.layoutDirection, lang == "en" ? .leftToRight : .rightToLeft)
         }
         .sheet(isPresented: $showAbout) {
             AboutView()
-                .environment(\.layoutDirection, lang == "en" ? .ltr : .rtl)
+                .environment(\.layoutDirection, lang == "en" ? .leftToRight : .rightToLeft)
         }
         .onAppear { loadMonth(); loadDay() }
         .onReceive(NotificationCenter.default.publisher(
