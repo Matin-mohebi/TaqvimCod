@@ -132,7 +132,7 @@
 		CODE_SIGN_STYLE = Automatic;
 		CURRENT_PROJECT_VERSION = 2;
 		INFOPLIST_FILE = TaqvimCod/Info.plist;
-		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim Kod";
+		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim";
 		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 		IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 		LD_RUNPATH_SEARCH_PATHS = (
@@ -156,7 +156,7 @@
 		CODE_SIGN_STYLE = Automatic;
 		CURRENT_PROJECT_VERSION = 2;
 		INFOPLIST_FILE = TaqvimCod/Info.plist;
-		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim Kod";
+		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim";
 		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 		IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 		LD_RUNPATH_SEARCH_PATHS = (

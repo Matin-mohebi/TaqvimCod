@@ -16,7 +16,7 @@ public final class S {
 
     static {
         // ---- fa ----
-        FA.put("app_name", "تقویم کد");
+        FA.put("app_name", "تقویم");
         FA.put("today", "امروز");
         FA.put("settings", "تنظیمات");
         FA.put("events", "رویدادها");
@@ -85,14 +85,14 @@ public final class S {
         FA.put("privacy_title", "حریم خصوصی و امنیت");
         FA.put("privacy_text", "تقویم کد هیچ دسترسی اینترنتی ندارد؛ رویدادها و تنظیمات شما هرگز از گوشی خارج نمی‌شوند. تنظیمات با رمزنگاری سخت‌افزاری AES-256-GCM و کلید Android Keystore ذخیره می‌شود و پشتیبان‌گیری ابری برای این برنامه غیرفعال است.");
         FA.put("play_protect_title", "پیام Google Play Protect");
-        FA.put("play_protect_text", "اگر هنگام نصب پیام «برنامه ناشناس» یا هشدار Play Protect دیدید، نگران نباشید: این هشدار برای همه برنامه‌هایی که خارج از فروشگاه گوگل نصب می‌شوند نمایش داده می‌شود و به معنی خطرناک بودن برنامه نیست.\n\nتقویم کد کد مخرب ندارد، دسترسی اینترنت ندارد و فقط به تقویم گوشی شما دسترسی دارد.\n\nبرای ادامه نصب: روی پیام ضربه بزنید و گزینه «نصب در هر صورت» یا «جزئیات بیشتر ← نصب» را انتخاب کنید.");
+        FA.put("play_protect_text", "اگر هنگام نصب پیام «App blocked to protect your device» یا هشدار Play Protect دیدید، نگران نباشید: گوگل فقط منبع نصب را نمی‌شناسد و این پیام برای همه برنامه‌های نصب‌شده خارج از فروشگاه گوگل نمایش داده می‌شود و به معنی خطرناک بودن برنامه نیست.\n\nتقویم کد مخرب ندارد، دسترسی اینترنت ندارد و فقط به تقویم گوشی شما دسترسی دارد.\n\nبرای ادامه نصب: در پیام هشدار روی «جزئیات بیشتر (More details)» یا علامت ⓘ ضربه بزنید و سپس گزینه «نصب در هر صورت (Install anyway)» را انتخاب کنید.");
         FA.put("understood", "متوجه شدم");
         FA.put("perm_rationale", "تقویم کد برای نمایش و ذخیره رویدادهای تقویم گوگل، به دسترسی تقویم نیاز دارد. رویدادها فقط روی گوشی خودتان خوانده و نوشته می‌شوند.");
         FA.put("save_failed", "ذخیره نشد؛ دوباره تلاش کنید");
         FA.put("slogan", "دقیق • امن • زیبا");
         FA.put("today_holiday", "امروز تعطیل رسمی است");
         // ---- en ----
-        EN.put("app_name", "Taqvim Kod");
+        EN.put("app_name", "Taqvim");
         EN.put("today", "Today");
         EN.put("settings", "Settings");
         EN.put("events", "Events");
@@ -161,7 +161,7 @@ public final class S {
         EN.put("privacy_title", "Privacy & Security");
         EN.put("privacy_text", "Taqvim Kod has NO internet permission — your events and settings never leave the device. Settings are stored with hardware-backed AES-256-GCM encryption using the Android Keystore, and cloud backup for this app is disabled.");
         EN.put("play_protect_title", "Google Play Protect message");
-        EN.put("play_protect_text", "If you see an \"Unknown app\" or Play Protect warning while installing, don't worry: this warning appears for every app installed outside Google Play and does not mean the app is dangerous.\n\nTaqvim Kod contains no malicious code, has no internet access and only touches your device calendar.\n\nTo continue installing: tap the warning and choose \"Install anyway\" or \"More details → Install\".");
+        EN.put("play_protect_text", "If you see \"App blocked to protect your device\" or any Play Protect warning while installing, don't worry: Google only doesn't recognize the install source. This warning appears for every app installed outside Google Play and does not mean the app is dangerous.\n\nTaqvim contains no malicious code, has no internet access and only touches your device calendar.\n\nTo continue installing: tap \"More details\" or the ⓘ icon on the warning, then choose \"Install anyway\".");
         EN.put("understood", "Got it");
         EN.put("perm_rationale", "Taqvim Kod needs calendar access to show and save your Google Calendar events. Events are only read from and written to your own device calendar.");
         EN.put("save_failed", "Couldn't save; please try again");

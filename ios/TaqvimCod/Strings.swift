@@ -5,7 +5,7 @@ import SwiftUI
 
 enum L {
     static let fa: [String: String] = [
-        "app_name": "تقویم کد",
+        "app_name": "تقویم",
         "subtitle": "تقویم جلالی • همگام با تقویم گوگل",
         "slogan": "دقیق • امن • زیبا",
         "today": "امروز",
@@ -71,7 +71,7 @@ enum L {
     ]
 
     static let en: [String: String] = [
-        "app_name": "Taqvim Kod",
+        "app_name": "Taqvim",
         "subtitle": "Jalali calendar • live calendar sync",
         "slogan": "Accurate • Secure • Beautiful",
         "today": "Today",
