@@ -61,6 +61,13 @@ cd TaqvimCod
 
 برای گزارش خطا یا پیشنهاد بهبود، در بخش **Issues** مخزن یک مورد ثبت کنید و مراحل بازتولید مشکل، نسخه اندروید/iOS و پیام خطا را بنویسید. اطلاعات شخصی، رمزها، کلیدهای خصوصی یا توکن‌های دسترسی را در گزارش‌ها قرار ندهید.
 
+## وب‌سایت‌های سازنده
+
+- [Matin WP Pro](https://matin-wp-pro.ir)
+- [Matin Zeus](https://matinzeus.ir)
+- [Dyno Tuning Zanjan](https://dyno-tuning-znj.ir)
+- [Elambar Zanjan](https://elambar-zanjan.ir)
+
 ## مجوز
 
 این پروژه تحت مجوز MIT منتشر می‌شود؛ جزئیات در فایل [LICENSE](LICENSE) آمده است.
