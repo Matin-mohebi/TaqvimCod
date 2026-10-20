@@ -2,7 +2,18 @@ plugins {
     id 'com.android.application'
 }
 
-def keystoreFile = rootProject.file("taqvimcod.keystore")
+// Signing material must never be embedded in source control. Configure these
+// values with Gradle properties or environment variables on the release machine.
+def signingValue = { String name ->
+    providers.gradleProperty(name).orElse(providers.environmentVariable(name)).orNull
+}
+def configuredStorePath = signingValue("TAQVIMCOD_STORE_FILE")
+def keystoreFile = configuredStorePath ? rootProject.file(configuredStorePath) : rootProject.file("taqvimcod.keystore")
+def signingStorePassword = signingValue("TAQVIMCOD_STORE_PASSWORD")
+def signingKeyAlias = signingValue("TAQVIMCOD_KEY_ALIAS")
+def signingKeyPassword = signingValue("TAQVIMCOD_KEY_PASSWORD")
+def releaseSigningConfigured = keystoreFile.isFile() &&
+        [signingStorePassword, signingKeyAlias, signingKeyPassword].every { it != null && !it.trim().isEmpty() }
 
 android {
     namespace 'com.taqvimcod.calendar'
@@ -16,18 +27,20 @@ android {
         versionName "1.1.1"
     }
 
-    if (keystoreFile.exists()) {
+    if (releaseSigningConfigured) {
         signingConfigs {
             release {
                 storeFile keystoreFile
-                storePassword "TaqvimKod@1403"
-                keyAlias "taqvimcod"
-                keyPassword "TaqvimKod@1403"
+                storePassword signingStorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
                 enableV1Signing true
                 enableV2Signing true
                 enableV3Signing true
             }
         }
+    } else {
+        logger.lifecycle("Release APK will be unsigned: configure TAQVIMCOD_STORE_FILE, TAQVIMCOD_STORE_PASSWORD, TAQVIMCOD_KEY_ALIAS and TAQVIMCOD_KEY_PASSWORD to sign it.")
     }
 
     buildTypes {
@@ -35,7 +48,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (keystoreFile.exists()) {
+            if (releaseSigningConfigured) {
                 signingConfig signingConfigs.release
             }
         }
@@ -49,4 +62,5 @@ android {
 
 // Zero external dependencies — pure Android SDK
 dependencies {
+    testImplementation 'junit:junit:4.13.2'
 }
