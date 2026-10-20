@@ -71,3 +71,13 @@ cd TaqvimCod
 ## مجوز
 
 این پروژه تحت مجوز MIT منتشر می‌شود؛ جزئیات در فایل [LICENSE](LICENSE) آمده است.
+
+---
+
+## 👨‍💻 درباره برنامه‌نویس
+
+من **متین** هستم؛ برنامه‌نویس و طراح وب که به ساخت اپلیکیشن و وب‌سایت علاقه دارم. روی پروژهٔ اندرویدی **تقویم** کار می‌کنم و در کنار آن، وب‌سایت‌هایی مثل Matin WP Pro، Matin Zeus، Dyno Tuning Zanjan و Elambar Zanjan را ساخته‌ام.
+
+🌐 [Matin WP Pro](https://matin-wp-pro.ir) · [Matin Zeus](https://matinzeus.ir) · [Dyno Tuning Zanjan](https://dyno-tuning-znj.ir) · [Elambar Zanjan](https://elambar-zanjan.ir)
+
+🔗 [پروفایل گیت‌هاب من](https://github.com/Matin-mohebi)
