@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
 
     /** Deliver background results only while this Activity is alive. */
     private void postUi(Runnable action) {
-        postUi(() -> {
+        ui.post(() -> {
             if (!destroyed && !isFinishing()) action.run();
         });
     }
