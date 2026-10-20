@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.text.util.Linkify;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -431,11 +432,12 @@ public final class UiDialogs {
             Linkify.addLinks(tvPhone, Pattern.compile("09\\d{9}"), "tel:", null,
                     (match, url) -> match.group());
             tvPhone.setLinksClickable(true);
+            tvPhone.setMovementMethod(LinkMovementMethod.getInstance());
             tvPhone.setLinkTextColor(tvPhone.getPaint().getColor());
         } catch (Exception ignored) {}
         b.addView(tvPhone);
         gap(c, b, 8);
-        TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_web_site",
+        TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_wp_pro",
                 13, pal.accent, false);
         linkify(tvInsta, Pattern.compile("instagram\\.com/[^\\s]+"));
         b.addView(tvInsta);
@@ -449,8 +451,14 @@ public final class UiDialogs {
 
     private static void linkify(TextView tv, Pattern p) {
         try {
-            Linkify.addLinks(tv, p, "http://", null, (match, url) -> match.group());
+            Linkify.addLinks(tv, p, "https://", null, (match, url) -> {
+                String target = match.group();
+                if (target.startsWith("http://") || target.startsWith("https://")) return target;
+                return "https://" + target;
+            });
             tv.setLinksClickable(true);
+            // TextView links inside AlertDialog need a movement method to receive taps.
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
             tv.setLinkTextColor(tv.getPaint().getColor());
         } catch (Exception ignored) {}
     }
