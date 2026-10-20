@@ -15,17 +15,17 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
 /**
- * Hardware-backed encrypted settings storage.
+ * Encrypted settings storage using Android Keystore when available.
  *
  * <ul>
  *   <li>Every value is encrypted with AES-256-GCM before it touches disk.</li>
- *   <li>The master key lives inside the Android Keystore (TEE / StrongBox when
- *       available) and can never be read by this app or any other app.</li>
+ *   <li>The master key is managed by Android Keystore (TEE / StrongBox when
+ *       available) and is not exposed through the app API.</li>
  *   <li>A fresh random 12-byte IV is generated for every write, so identical
  *       values never produce identical ciphertexts.</li>
  *   <li>If the Keystore is unavailable (rare broken devices), we fail closed
- *       to a device-local random key kept in a MODE_PRIVATE file, which is
- *       still far safer than plaintext.</li>
+ *       to a device-local random key kept in app-private storage. This fallback
+ *       is less resistant to device-level compromise than Android Keystore.</li>
  * </ul>
  *
  * This class is the ONLY way Prefs touches disk — no setting is ever stored
@@ -116,7 +116,6 @@ public final class SecurePrefs {
                     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                     .setKeySize(256)
-                    .setRandomizedEncryptionRequired(false) // we supply our own IV
                     .build());
             return gen.generateKey();
         } catch (Exception e) {
@@ -149,10 +148,12 @@ public final class SecurePrefs {
     private static String encrypt(Context c, String plain) {
         if (plain == null) return null;
         try {
-            byte[] iv = new byte[IV_LEN];
-            new SecureRandom().nextBytes(iv);
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, key(c), new GCMParameterSpec(TAG_BITS, iv));
+            // Let the crypto provider generate the IV. This keeps Android Keystore's
+            // randomized-encryption requirement enabled and avoids caller IV reuse.
+            cipher.init(Cipher.ENCRYPT_MODE, key(c));
+            byte[] iv = cipher.getIV();
+            if (iv == null || iv.length != IV_LEN) return null;
             byte[] ct = cipher.doFinal(plain.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             byte[] out = new byte[iv.length + ct.length];
             System.arraycopy(iv, 0, out, 0, iv.length);
