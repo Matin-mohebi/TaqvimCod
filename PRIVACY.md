@@ -1,4 +1,4 @@
-# سیاست حریم خصوصی — تقویم کد / Privacy Policy
+# سیاست حریم خصوصی — تقویم / Privacy Policy
 
 <div dir="rtl">
 
@@ -7,7 +7,7 @@
 تاریخ آخرین بروزرسانی: اکتبر ۲۰۲۶ (مهر ۱۴۰۵)
 
 ### اصل کلی
-تقویم کد **هیچ مجوز اینترنتی ندارد** (`android.permission.INTERNET` درخواست نشده است). این یعنی خود برنامه نمی‌تواند مستقیماً درخواست شبکه ارسال کند. بااین‌حال، رویدادهایی که در یک تقویم ابری (مثلاً تقویم متصل به حساب گوگل) ذخیره می‌شوند ممکن است طبق تنظیمات حساب و دستگاه توسط ارائه‌دهنده تقویم همگام‌سازی شوند؛ این ارتباط را برنامه تقویم کد انجام نمی‌دهد.
+تقویم **هیچ مجوز اینترنتی ندارد** (`android.permission.INTERNET` درخواست نشده است). این یعنی خود برنامه نمی‌تواند مستقیماً درخواست شبکه ارسال کند. بااین‌حال، رویدادهایی که در یک تقویم ابری (مثلاً تقویم متصل به حساب گوگل) ذخیره می‌شوند ممکن است طبق تنظیمات حساب و دستگاه توسط ارائه‌دهنده تقویم همگام‌سازی شوند؛ این ارتباط را برنامه تقویم انجام نمی‌دهد.
 
 ### چه داده‌هایی پردازش می‌شود؟
 1. **رویدادهای تقویم** — فقط از طریق تقویم سیستم گوشی (اکانت گوگل خودِ کاربر) خوانده و نوشته می‌شوند. برنامه کپی جداگانه‌ای از رویدادها در سرور خودش ذخیره نمی‌کند؛ ارائه‌دهنده تقویم ممکن است طبق تنظیمات همگام‌سازی خودش نسخه ابری داشته باشد.
@@ -35,7 +35,7 @@
 Last updated: October 2025
 
 ### Core principle
-Taqvim Kod has **no INTERNET permission** (`android.permission.INTERNET` is never requested). Therefore, the app itself cannot directly make network requests. However, events saved into a cloud-backed calendar (for example, a calendar connected to a Google account) may be synced by that calendar provider according to account and device settings; that network activity is not performed by Taqvim Kod.
+تقویم has **no INTERNET permission** (`android.permission.INTERNET` is never requested). Therefore, the app itself cannot directly make network requests. However, events saved into a cloud-backed calendar (for example, a calendar connected to a Google account) may be synced by that calendar provider according to account and device settings; that network activity is not performed by تقویم.
 
 ### What data is processed?
 1. **Calendar events** — read/written only through the device's system calendar provider (the user's own Google account). The app does not copy events to its own server. A calendar provider may keep a cloud copy according to its sync settings.
