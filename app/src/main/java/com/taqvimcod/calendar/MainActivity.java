@@ -426,12 +426,13 @@ public class MainActivity extends Activity {
     }
 
     private void doRefresh() {
-        boolean perms = CalendarRepo.hasPerms(this);
-        writableCals = perms ? CalendarRepo.writableCalendars(this) : new ArrayList<>();
+        boolean canRead = CalendarRepo.hasReadPerm(this);
+        boolean canWrite = CalendarRepo.hasPerms(this);
+        writableCals = canWrite ? CalendarRepo.writableCalendars(this) : new ArrayList<>();
         SparseArray<MonthView.DayCell> cells = new SparseArray<>();
         int adj = Prefs.hijriAdj(this);
         int len = Dates.jalaaliMonthLength(curJy, curJm);
-        if (perms) {
+        if (canRead) {
             long from = Dates.dayStartMillis(Dates.j2d(curJy, curJm, 1));
             long to = Dates.dayStartMillis(Dates.j2d(curJy, curJm, len)) + 86400000L;
             List<CalendarRepo.Ev> evs = CalendarRepo.instances(this, from, to);
@@ -468,7 +469,7 @@ public class MainActivity extends Activity {
             month.animate().alpha(1f).setDuration(200).start();
             updateHeaderInfo();
             updateCountdown();
-            tvSyncBadge.setVisibility(perms ? View.VISIBLE : View.GONE);
+            tvSyncBadge.setVisibility(canRead ? View.VISIBLE : View.GONE);
             tvSyncBadge.setText("● " + S.t(this, "sync_active"));
             loadDay();
             WidgetProvider.updateAll(this);
@@ -523,9 +524,9 @@ public class MainActivity extends Activity {
     private void loadDay() {
         final int jy = selJy, jm = selJm, jd = selJd;
         exec.execute(() -> {
-            boolean perms = CalendarRepo.hasPerms(this);
+            boolean canRead = CalendarRepo.hasReadPerm(this);
             List<CalendarRepo.Ev> day = new ArrayList<>();
-            if (perms) {
+            if (canRead) {
                 long from = Dates.dayStartMillis(Dates.j2d(jy, jm, jd));
                 List<CalendarRepo.Ev> evs = CalendarRepo.instances(this, from, from + 86400000L);
                 int jdn = Dates.j2d(jy, jm, jd);
@@ -545,7 +546,7 @@ public class MainActivity extends Activity {
 
     private void buildPanel(List<CalendarRepo.Ev> events) {
         panel.removeAllViews();
-        if (!CalendarRepo.hasPerms(this)) {
+        if (!CalendarRepo.hasReadPerm(this)) {
             panel.addView(banner());
             tvEventsTitle.setText(S.t(this, "events"));
             return;

@@ -4,14 +4,14 @@
 
 ## فارسی
 
-تاریخ آخرین بروزرسانی: اکتبر ۲۰۲۵ (مهر ۱۴۰۴)
+تاریخ آخرین بروزرسانی: اکتبر ۲۰۲۶ (مهر ۱۴۰۵)
 
 ### اصل کلی
-تقویم کد **هیچ مجوز اینترنتی ندارد** (`android.permission.INTERNET` درخواست نشده است). این یعنی از نظر فنی امکان ارسال هرگونه داده به هر سروری وجود ندارد.
+تقویم کد **هیچ مجوز اینترنتی ندارد** (`android.permission.INTERNET` درخواست نشده است). این یعنی خود برنامه نمی‌تواند مستقیماً درخواست شبکه ارسال کند. بااین‌حال، رویدادهایی که در یک تقویم ابری (مثلاً تقویم متصل به حساب گوگل) ذخیره می‌شوند ممکن است طبق تنظیمات حساب و دستگاه توسط ارائه‌دهنده تقویم همگام‌سازی شوند؛ این ارتباط را برنامه تقویم کد انجام نمی‌دهد.
 
 ### چه داده‌هایی پردازش می‌شود؟
-1. **رویدادهای تقویم** — فقط از طریق تقویم سیستم گوشی (اکانت گوگل خودِ کاربر) خوانده و نوشته می‌شوند. هیچ کپی از رویدادها جای دیگری ذخیره نمی‌شود.
-2. **تنظیمات برنامه** (تم، زبان، تصحیح قمری) — روی خود دستگاه با **رمزنگاری AES-256-GCM** و کلید داخل **Android Keystore** ذخیره می‌شوند؛ این کلید خارج از سخت‌افزار گوشی قابل استخراج نیست.
+1. **رویدادهای تقویم** — فقط از طریق تقویم سیستم گوشی (اکانت گوگل خودِ کاربر) خوانده و نوشته می‌شوند. برنامه کپی جداگانه‌ای از رویدادها در سرور خودش ذخیره نمی‌کند؛ ارائه‌دهنده تقویم ممکن است طبق تنظیمات همگام‌سازی خودش نسخه ابری داشته باشد.
+2. **تنظیمات برنامه** (تم، زبان، تصحیح قمری) — روی خود دستگاه با **رمزنگاری AES-256-GCM** و کلید داخل **Android Keystore** ذخیره می‌شوند؛ در حالت عادی کلید از طریق API برنامه قابل خواندن نیست؛ در دستگاه‌هایی که Android Keystore در دسترس نباشد، برنامه از کلید محلیِ جایگزین استفاده می‌کند که سطح حفاظت آن با Keystore یکسان نیست.
 3. **داده‌های شخصی حساس** (موقعیت مکانی، مخاطبین، دوربین، میکروفون، عکس) — هیچ‌کدام درخواست یا پردازش نمی‌شوند.
 
 ### پشتیبان‌گیری ابری
@@ -35,11 +35,11 @@
 Last updated: October 2025
 
 ### Core principle
-Taqvim Kod has **no INTERNET permission** (`android.permission.INTERNET` is never requested). It is therefore technically impossible for the app to transmit any data anywhere.
+Taqvim Kod has **no INTERNET permission** (`android.permission.INTERNET` is never requested). Therefore, the app itself cannot directly make network requests. However, events saved into a cloud-backed calendar (for example, a calendar connected to a Google account) may be synced by that calendar provider according to account and device settings; that network activity is not performed by Taqvim Kod.
 
 ### What data is processed?
-1. **Calendar events** — read/written only through the device's system calendar provider (the user's own Google account). No copy of any event is stored anywhere else.
-2. **App settings** (theme, language, Hijri correction) — stored on-device, encrypted with **AES-256-GCM** using a key inside the **Android Keystore**; that key cannot be extracted from the device's secure hardware.
+1. **Calendar events** — read/written only through the device's system calendar provider (the user's own Google account). The app does not copy events to its own server. A calendar provider may keep a cloud copy according to its sync settings.
+2. **App settings** (theme, language, Hijri correction) — stored on-device, encrypted with **AES-256-GCM** using a key inside the **Android Keystore**; the Android Keystore key is not exposed through the app API under normal operation. If Android Keystore is unavailable, a local fallback key is used and does not provide the same protection level.
 3. **Sensitive personal data** (location, contacts, camera, microphone, photos) — never requested or processed.
 
 ### Cloud backup
