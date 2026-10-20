@@ -13,6 +13,9 @@ jobs:
   android:
     runs-on: ubuntu-latest
     env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+    env:
       TAQVIMCOD_KEYSTORE_BASE64: ${{ secrets.TAQVIMCOD_KEYSTORE_BASE64 }}
       TAQVIMCOD_STORE_PASSWORD: ${{ secrets.TAQVIMCOD_STORE_PASSWORD }}
       TAQVIMCOD_KEY_ALIAS: ${{ secrets.TAQVIMCOD_KEY_ALIAS }}
@@ -29,7 +32,10 @@ jobs:
           cache: gradle
 
       - name: Install Android SDK platform and build tools
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Configure release signing (optional)
         if: ${{ env.TAQVIMCOD_KEYSTORE_BASE64 != '' && env.TAQVIMCOD_STORE_PASSWORD != '' && env.TAQVIMCOD_KEY_ALIAS != '' && env.TAQVIMCOD_KEY_PASSWORD != '' }}
