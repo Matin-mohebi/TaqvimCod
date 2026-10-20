@@ -9,12 +9,12 @@
 
 ## Security features / امکانات امنیتی
 
-- **No INTERNET permission** — data exfiltration is impossible by design
-- Settings encrypted with **AES-256-GCM**, key sealed in **Android Keystore** (TEE/StrongBox)
+- **No INTERNET permission** — the app itself cannot make direct network requests. Calendar-provider sync (for example, Google account sync) may still upload events saved to a cloud-backed calendar according to the user’s account/device settings.
+- Settings encrypted with **AES-256-GCM**, key stored with **Android Keystore** when available; a software fallback has a lower protection level and is used only if Keystore initialization fails
 - `allowBackup=false`, cloud backup & device-transfer excluded via `dataExtractionRules`
 - `network_security_config`: cleartext traffic denied
 - Optional **FLAG_SECURE** (screenshot/recents protection) in Settings
-- Release builds: **R8** shrink + obfuscation, signed (v2 scheme), `debuggable=false`
+- Release builds: **R8** shrink + obfuscation, `debuggable=false`; APK signing is enabled only when a private keystore and credentials are configured outside source control
 - Minimum attack surface: only 3 permissions (READ_CALENDAR, WRITE_CALENDAR, RECEIVE_BOOT_COMPLETED)
 - Widget receiver is non-exported; every provider call is permission-checked; text inputs are length-clamped
 - On iOS: all data stays between the device and the user's own calendar via EventKit; no network calls by the app itself
