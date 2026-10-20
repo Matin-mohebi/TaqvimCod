@@ -202,8 +202,11 @@ public final class UiDialogs {
             long dayStart = Dates.dayStartMillis(Dates.j2d(act.selJy, act.selJm, act.selJd));
             long start, end;
             if (cbAll.isChecked()) {
-                start = dayStart;
-                end = dayStart + 86400000L;
+                int selectedJdn = Dates.j2d(act.selJy, act.selJm, act.selJd);
+                start = Dates.dayStartUtcMillis(selectedJdn);
+                // DTEND is exclusive for all-day events; calculate the next date
+                // rather than adding 24 hours to local midnight (DST-safe).
+                end = Dates.dayStartUtcMillis(selectedJdn + 1);
             } else {
                 start = dayStart + (sh[0] * 60L + sm[0]) * 60000L;
                 end = dayStart + (eh[0] * 60L + em[0]) * 60000L;
