@@ -71,10 +71,11 @@ public class WidgetProvider extends AppWidgetProvider {
             List<CalendarRepo.Ev> evs = CalendarRepo.instances(ctx, now, now + 7L * 86400000L);
             for (CalendarRepo.Ev ev : evs) {
                 if (ev.begin < now - 60000L) continue;
-                int dayDiff = Dates.jdnOfMillis(ev.begin) - jdn;
+                int eventJdn = ev.allDay ? Dates.jdnOfMillisUtc(ev.begin) : Dates.jdnOfMillis(ev.begin);
+                int dayDiff = eventJdn - jdn;
                 String dayName = dayDiff == 0 ? (fa ? "امروز" : "Today")
                         : dayDiff == 1 ? S.t(ctx, "tomorrow")
-                        : S.weekdays(ctx)[Dates.weekdayFromJdn(Dates.jdnOfMillis(ev.begin))];
+                        : S.weekdays(ctx)[Dates.weekdayFromJdn(eventJdn)];
                 String when;
                 if (ev.allDay) {
                     when = S.t(ctx, "all_day_label");

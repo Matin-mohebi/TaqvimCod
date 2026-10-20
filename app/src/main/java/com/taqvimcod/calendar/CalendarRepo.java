@@ -168,7 +168,7 @@ public final class CalendarRepo {
         v.put(Events.DTSTART, start);
         v.put(Events.DTEND, end);
         v.put(Events.ALL_DAY, allDay ? 1 : 0);
-        v.put(Events.EVENT_TIMEZONE, java.util.TimeZone.getDefault().getID());
+        v.put(Events.EVENT_TIMEZONE, allDay ? "UTC" : java.util.TimeZone.getDefault().getID());
         v.put(Events.STATUS, Events.STATUS_CONFIRMED);
         try {
             Uri uri = c.getContentResolver().insert(Events.CONTENT_URI, v);
@@ -187,7 +187,7 @@ public final class CalendarRepo {
         v.put(Events.DTSTART, start);
         v.put(Events.DTEND, end);
         v.put(Events.ALL_DAY, allDay ? 1 : 0);
-        v.put(Events.EVENT_TIMEZONE, java.util.TimeZone.getDefault().getID());
+        v.put(Events.EVENT_TIMEZONE, allDay ? "UTC" : java.util.TimeZone.getDefault().getID());
         try {
             int updated = c.getContentResolver().update(
                     ContentUris.withAppendedId(Events.CONTENT_URI, eventId), v, null, null);

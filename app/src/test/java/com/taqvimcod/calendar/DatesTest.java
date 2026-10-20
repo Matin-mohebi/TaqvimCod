@@ -40,6 +40,15 @@ public class DatesTest {
     }
 
     @Test
+    public void utcAllDayDatesAreIndependentOfDeviceTimezone() {
+        int jdn = Dates.j2d(1405, 1, 1);
+        long utcMidnight = Dates.dayStartUtcMillis(jdn);
+        assertEquals(jdn, Dates.jdnOfMillisUtc(utcMidnight));
+        assertEquals(jdn, Dates.jdnOfMillisUtc(Dates.dayStartUtcMillis(jdn + 1) - 1));
+        assertEquals(jdn + 1, Dates.jdnOfMillisUtc(Dates.dayStartUtcMillis(jdn + 1)));
+    }
+
+    @Test
     public void jalaliMonthLengthsAreWithinExpectedBounds() {
         for (int jy = 1300; jy <= 1500; jy++) {
             for (int jm = 1; jm <= 12; jm++) {

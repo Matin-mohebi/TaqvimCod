@@ -184,9 +184,30 @@ public final class Dates {
         return c.getTimeInMillis();
     }
 
+    /** UTC midnight millis for the Gregorian date represented by a JDN.
+     * Android all-day calendar events are stored as UTC dates, not local times. */
+    public static long dayStartUtcMillis(int jdn) {
+        GDate g = d2g(jdn);
+        java.util.Calendar c = new java.util.GregorianCalendar(
+                java.util.TimeZone.getTimeZone("UTC"));
+        c.clear();
+        c.set(g.gy, g.gm - 1, g.gd, 0, 0, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
+    }
+
     /** jdn containing the given epoch millis (device timezone) */
     public static int jdnOfMillis(long millis) {
         java.util.Calendar c = java.util.Calendar.getInstance();
+        c.setTimeInMillis(millis);
+        return g2d(c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH) + 1,
+                c.get(java.util.Calendar.DAY_OF_MONTH));
+    }
+
+    /** jdn containing UTC-based all-day event millis, independent of device timezone. */
+    public static int jdnOfMillisUtc(long millis) {
+        java.util.Calendar c = new java.util.GregorianCalendar(
+                java.util.TimeZone.getTimeZone("UTC"));
         c.setTimeInMillis(millis);
         return g2d(c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH) + 1,
                 c.get(java.util.Calendar.DAY_OF_MONTH));

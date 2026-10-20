@@ -437,9 +437,9 @@ public class MainActivity extends Activity {
             long to = Dates.dayStartMillis(Dates.j2d(curJy, curJm, len)) + 86400000L;
             List<CalendarRepo.Ev> evs = CalendarRepo.instances(this, from, to);
             for (CalendarRepo.Ev ev : evs) {
-                int b = Dates.jdnOfMillis(ev.begin);
+                int b = ev.allDay ? Dates.jdnOfMillisUtc(ev.begin) : Dates.jdnOfMillis(ev.begin);
                 long endM = ev.end > 0 ? ev.end - 1 : ev.begin;
-                int e = Dates.jdnOfMillis(Math.max(endM, ev.begin));
+                int e = ev.allDay ? Dates.jdnOfMillisUtc(Math.max(endM, ev.begin)) : Dates.jdnOfMillis(Math.max(endM, ev.begin));
                 for (int d = b; d <= e && d - b < 62; d++) {
                     Dates.JDate jj = Dates.d2j(d);
                     if (jj.jy == curJy && jj.jm == curJm) {
@@ -531,9 +531,9 @@ public class MainActivity extends Activity {
                 List<CalendarRepo.Ev> evs = CalendarRepo.instances(this, from, from + 86400000L);
                 int jdn = Dates.j2d(jy, jm, jd);
                 for (CalendarRepo.Ev ev : evs) {
-                    int b = Dates.jdnOfMillis(ev.begin);
+                    int b = ev.allDay ? Dates.jdnOfMillisUtc(ev.begin) : Dates.jdnOfMillis(ev.begin);
                     long endM = ev.end > 0 ? ev.end - 1 : ev.begin;
-                    int e = Dates.jdnOfMillis(Math.max(endM, ev.begin));
+                    int e = ev.allDay ? Dates.jdnOfMillisUtc(Math.max(endM, ev.begin)) : Dates.jdnOfMillis(Math.max(endM, ev.begin));
                     if (jdn >= b && jdn <= e) day.add(ev);
                 }
             }

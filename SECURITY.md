@@ -1,4 +1,4 @@
-# Security Policy — Taqvim Kod / سیاست امنیتی
+# Security Policy — تقویم / سیاست امنیتی
 
 ## Supported versions / نسخه‌های پشتیبانی‌شده
 

@@ -1,6 +1,6 @@
-# 🍎 Taqvim Kod — iOS (SwiftUI)
+# 🍎 تقویم — iOS (SwiftUI)
 
-اپلیکیشن تقویم کد برای آیفون / آیپد — کاملاً بومی با SwiftUI، هم‌تراز با نسخه اندروید.
+اپلیکیشن تقویم برای آیفون / آیپد — کاملاً بومی با SwiftUI، هم‌تراز با نسخه اندروید.
 
 The iOS app is **100% native SwiftUI**, feature-matched with the Android version.
 
