@@ -3,10 +3,13 @@ package com.taqvimcod.calendar;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.text.util.Linkify;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -420,22 +423,27 @@ public final class UiDialogs {
 
         b.addView(label(c, pal, S.t(c, "contact"), 14, pal.text, true));
         gap(c, b, 8);
-        TextView tvSites = label(c, pal,
-                "https://matinzeus.ir\nhttps://matin-wp-pro.ir\nhttps://dyno-tuning-znj.ir\nhttps://elambar-zanjan.ir",
-                13, pal.accent, false);
-        linkify(tvSites, Pattern.compile("https://[^\\s]+"));
-        b.addView(tvSites);
+        b.addView(label(c, pal, "سایت‌های من — برای باز کردن هر سایت لمس کن", 12, pal.textSub, false));
+        gap(c, b, 8);
+        addWebsiteButton(act, b, pal, "🌐 فروشگاه Matin Zeus  •  matinzeus.ir", "https://matinzeus.ir");
+        gap(c, b, 6);
+        addWebsiteButton(act, b, pal, "💻 نمونه‌کارها و طراحی سایت  •  matin-wp-pro.ir", "https://matin-wp-pro.ir");
+        gap(c, b, 6);
+        addWebsiteButton(act, b, pal, "🚗 داینوجت زنجان  •  dyno-tuning-znj.ir", "https://dyno-tuning-znj.ir");
+        gap(c, b, 6);
+        addWebsiteButton(act, b, pal, "🚚 اعلام بار زنجان  •  elambar-zanjan.ir", "https://elambar-zanjan.ir");
         gap(c, b, 8);
         TextView tvPhone = label(c, pal, S.t(c, "phone") + ": 09195394891", 13, pal.accent, false);
         try {
             Linkify.addLinks(tvPhone, Pattern.compile("09\\d{9}"), "tel:", null,
                     (match, url) -> match.group());
             tvPhone.setLinksClickable(true);
+            tvPhone.setMovementMethod(LinkMovementMethod.getInstance());
             tvPhone.setLinkTextColor(tvPhone.getPaint().getColor());
         } catch (Exception ignored) {}
         b.addView(tvPhone);
         gap(c, b, 8);
-        TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_web_site",
+        TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_wp_pro",
                 13, pal.accent, false);
         linkify(tvInsta, Pattern.compile("instagram\\.com/[^\\s]+"));
         b.addView(tvInsta);
@@ -447,10 +455,36 @@ public final class UiDialogs {
                 .show();
     }
 
+    private static void addWebsiteButton(MainActivity act, LinearLayout parent, Theme.Pal pal,
+                                           String title, String url) {
+        TextView button = chip(act, pal, title, pal.accentSoft, pal.accent);
+        button.setClickable(true);
+        button.setFocusable(true);
+        button.setContentDescription(title + "؛ باز کردن در مرورگر");
+        button.setOnClickListener(v -> openWebsite(act, url));
+        parent.addView(button, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    private static void openWebsite(Context context, String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(context, "مرورگری برای باز کردن سایت پیدا نشد.", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private static void linkify(TextView tv, Pattern p) {
         try {
-            Linkify.addLinks(tv, p, "http://", null, (match, url) -> match.group());
+            Linkify.addLinks(tv, p, "https://", null, (match, url) -> {
+                String target = match.group();
+                if (target.startsWith("http://") || target.startsWith("https://")) return target;
+                return "https://" + target;
+            });
             tv.setLinksClickable(true);
+            // TextView links inside AlertDialog need a movement method to receive taps.
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
             tv.setLinkTextColor(tv.getPaint().getColor());
         } catch (Exception ignored) {}
     }

@@ -19,6 +19,8 @@ public final class S {
         FA.put("app_name", "تقویم");
         FA.put("today", "امروز");
         FA.put("settings", "تنظیمات");
+        FA.put("previous_month", "ماه قبل");
+        FA.put("next_month", "ماه بعد");
         FA.put("events", "رویدادها");
         FA.put("events_count", "رویدادها (%s)");
         FA.put("no_events", "رویدادی برای این روز ثبت نشده است");
@@ -95,6 +97,8 @@ public final class S {
         EN.put("app_name", "Taqvim");
         EN.put("today", "Today");
         EN.put("settings", "Settings");
+        EN.put("previous_month", "Previous month");
+        EN.put("next_month", "Next month");
         EN.put("events", "Events");
         EN.put("events_count", "Events (%s)");
         EN.put("no_events", "No events for this day");

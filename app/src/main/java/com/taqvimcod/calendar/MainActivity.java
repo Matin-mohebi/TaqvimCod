@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
     private MonthView month;
     private SparseArray<MonthView.DayCell> lastCells = new SparseArray<>();
     private boolean rationaleShown;
+    private volatile boolean destroyed;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -103,6 +104,13 @@ public class MainActivity extends Activity {
     // ---------------- helpers ----------------
 
     private int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density); }
+
+    /** Deliver background results only while this Activity is alive. */
+    private void postUi(Runnable action) {
+        ui.post(() -> {
+            if (!destroyed && !isFinishing()) action.run();
+        });
+    }
 
     private Typeface font(String which) { return MonthView.Font.get(this, which); }
 
@@ -203,6 +211,7 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams lpSet = new LinearLayout.LayoutParams(-2, -2);
         lpSet.leftMargin = dp(7);
         tvSettingsBtn = text("⚙", 15, pal.onGrad, Font.REGULAR, false);
+        tvSettingsBtn.setContentDescription(S.t(this, "settings"));
         tvSettingsBtn.setGravity(Gravity.CENTER);
         tvSettingsBtn.setPadding(dp(9), dp(5), dp(9), dp(5));
         tvSettingsBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
@@ -226,6 +235,7 @@ public class MainActivity extends Activity {
         navRow.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         navRow.setGravity(Gravity.CENTER_VERTICAL);
         tvPrev = text("‹", 26, pal.accent, Font.BOLD, true);
+        tvPrev.setContentDescription(S.t(this, "previous_month"));
         tvPrev.setPadding(dp(18), dp(4), dp(18), dp(4));
         tvPrev.setBackground(ripple(0x00000000, 20));
         tvPrev.setOnClickListener(v -> changeMonth(false));
@@ -234,6 +244,7 @@ public class MainActivity extends Activity {
         tvMonthYear.setGravity(Gravity.CENTER);
         navRow.addView(tvMonthYear, new LinearLayout.LayoutParams(0, -2, 1f));
         tvNext = text("›", 26, pal.accent, Font.BOLD, true);
+        tvNext.setContentDescription(S.t(this, "next_month"));
         tvNext.setPadding(dp(18), dp(4), dp(18), dp(4));
         tvNext.setBackground(ripple(0x00000000, 20));
         tvNext.setOnClickListener(v -> changeMonth(true));
@@ -295,6 +306,7 @@ public class MainActivity extends Activity {
 
         // ---- FAB ----
         TextView fab = text("+", 26, pal.onAccent, Font.BOLD, true);
+        fab.setContentDescription(S.t(this, "add_event"));
         fab.setGravity(Gravity.CENTER);
         fab.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
                 grad(19), null));
@@ -422,6 +434,7 @@ public class MainActivity extends Activity {
     // ---------------- data / refresh ----------------
 
     public void refreshAll() {
+        if (destroyed) return;
         exec.execute(this::doRefresh);
     }
 
@@ -460,7 +473,7 @@ public class MainActivity extends Activity {
         }
         lastCells = cells;
         Dates.JDate todayNow = Dates.todayJ();
-        ui.post(() -> {
+        postUi(() -> {
             today = todayNow;
             tvMonthYear.setText(S.fmtMonthYear(this, curJy, curJm));
             int[] tdy = {today.jy, today.jm, today.jd};
@@ -538,7 +551,7 @@ public class MainActivity extends Activity {
                 }
             }
             List<CalendarRepo.Ev> fday = day;
-            ui.post(() -> buildPanel(fday));
+            postUi(() -> buildPanel(fday));
         });
     }
 
@@ -669,11 +682,13 @@ public class MainActivity extends Activity {
             actions.setOrientation(LinearLayout.VERTICAL);
             actions.setGravity(Gravity.CENTER);
             TextView edit = text("✎", 15, pal.accent, Font.REGULAR, false);
+            edit.setContentDescription(S.t(this, "edit"));
             edit.setGravity(Gravity.CENTER);
             edit.setPadding(dp(9), dp(6), dp(9), dp(6));
             edit.setBackground(ripple(pal.accentSoft, 12));
             edit.setOnClickListener(v -> UiDialogs.eventForm(this, ev));
             TextView del = text("🗑", 13, pal.red, Font.REGULAR, false);
+            del.setContentDescription(S.t(this, "delete"));
             del.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams lpDel = new LinearLayout.LayoutParams(-2, -2);
             lpDel.topMargin = dp(5);
@@ -695,7 +710,7 @@ public class MainActivity extends Activity {
             boolean ok = edit == null
                     ? CalendarRepo.insert(this, calId, title, desc, start, end, allDay)
                     : CalendarRepo.update(this, edit.eventId, title, desc, start, end, allDay);
-            ui.post(() -> {
+            postUi(() -> {
                 Toast.makeText(this, ok ? S.t(this, "saved") : S.t(this, "save_failed"),
                         Toast.LENGTH_SHORT).show();
                 if (ok) refreshAll();
@@ -710,7 +725,7 @@ public class MainActivity extends Activity {
                 .setMessage(S.t(this, "del_confirm_text").replace("%s", ev.title))
                 .setPositiveButton(S.t(this, "delete"), (d, w) -> exec.execute(() -> {
                     boolean ok = CalendarRepo.delete(this, ev.eventId);
-                    ui.post(() -> {
+                    postUi(() -> {
                         if (ok) {
                             Toast.makeText(this, S.t(this, "deleted"), Toast.LENGTH_SHORT).show();
                             refreshAll();
@@ -755,6 +770,19 @@ public class MainActivity extends Activity {
             } catch (Exception ignored) {}
             obsRegistered = false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        destroyed = true;
+        ui.removeCallbacksAndMessages(null);
+        if (obsRegistered) {
+            try { getContentResolver().unregisterContentObserver(observer); }
+            catch (Exception ignored) {}
+            obsRegistered = false;
+        }
+        exec.shutdownNow();
+        super.onDestroy();
     }
 
     @Override
