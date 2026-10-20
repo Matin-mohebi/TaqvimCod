@@ -41,12 +41,17 @@ public final class CalendarRepo {
 
     public static class Cal {
         public long id;
-        public String name, account;
+        public String name, account, accountType;
         public int color;
+        public boolean primary;
+    }
+
+    public static boolean hasReadPerm(Context c) {
+        return c.checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean hasPerms(Context c) {
-        return c.checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+        return hasReadPerm(c)
                 && c.checkSelfPermission(Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -76,18 +81,28 @@ public final class CalendarRepo {
                     cal.id = cur.getLong(gi);
                     cal.name = cur.getString(gn);
                     cal.account = cur.getString(ga);
+                    int gat = cur.getColumnIndex(Calendars.ACCOUNT_TYPE);
+                    int gp = cur.getColumnIndex(Calendars.IS_PRIMARY);
+                    cal.accountType = gat >= 0 ? cur.getString(gat) : null;
+                    cal.primary = gp >= 0 && cur.getInt(gp) == 1;
                     cal.color = cur.getInt(gc);
                     out.add(cal);
                 }
             }
         } catch (Exception ignored) {}
-        // Google calendars first
-        out.sort((a, b) -> Boolean.compare(isLocal(b), isLocal(a)));
+        // Prefer Google calendars, then primary calendars; keep names stable within each group.
+        out.sort((a, b) -> {
+            int googleFirst = Boolean.compare(isGoogle(b), isGoogle(a));
+            if (googleFirst != 0) return googleFirst;
+            int primaryFirst = Boolean.compare(b.primary, a.primary);
+            if (primaryFirst != 0) return primaryFirst;
+            return String.valueOf(a.name).compareToIgnoreCase(String.valueOf(b.name));
+        });
         return out;
     }
 
-    private static boolean isLocal(Cal cal) {
-        return cal.account == null || !cal.account.contains("@");
+    private static boolean isGoogle(Cal cal) {
+        return "com.google".equals(cal.accountType);
     }
 
     /** defensive clamp for any text we hand to the provider */
@@ -100,7 +115,7 @@ public final class CalendarRepo {
     /** expanded instances overlapping [from, to) */
     public static List<Ev> instances(Context c, long from, long to) {
         List<Ev> out = new ArrayList<>();
-        if (!hasPerms(c)) return out;
+        if (!hasReadPerm(c)) return out;
         List<Cal> writable = writableCalendars(c);
         String[] proj = {Instances.EVENT_ID, Instances.TITLE, Instances.BEGIN, Instances.END,
                 Instances.ALL_DAY, Instances.EVENT_LOCATION, Instances.DESCRIPTION,
@@ -174,9 +189,9 @@ public final class CalendarRepo {
         v.put(Events.ALL_DAY, allDay ? 1 : 0);
         v.put(Events.EVENT_TIMEZONE, java.util.TimeZone.getDefault().getID());
         try {
-            c.getContentResolver().update(ContentUris.withAppendedId(Events.CONTENT_URI, eventId),
-                    v, null, null);
-            return true;
+            int updated = c.getContentResolver().update(
+                    ContentUris.withAppendedId(Events.CONTENT_URI, eventId), v, null, null);
+            return updated > 0;
         } catch (Exception e) {
             return false;
         }
@@ -185,9 +200,9 @@ public final class CalendarRepo {
     public static boolean delete(Context c, long eventId) {
         if (!hasPerms(c)) return false;
         try {
-            c.getContentResolver().delete(ContentUris.withAppendedId(Events.CONTENT_URI, eventId),
-                    null, null);
-            return true;
+            int deleted = c.getContentResolver().delete(
+                    ContentUris.withAppendedId(Events.CONTENT_URI, eventId), null, null);
+            return deleted > 0;
         } catch (Exception e) {
             return false;
         }
