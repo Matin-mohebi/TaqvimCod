@@ -15,7 +15,6 @@ jobs:
     env:
       ANDROID_HOME: /usr/local/lib/android/sdk
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-    env:
       TAQVIMCOD_KEYSTORE_BASE64: ${{ secrets.TAQVIMCOD_KEYSTORE_BASE64 }}
       TAQVIMCOD_STORE_PASSWORD: ${{ secrets.TAQVIMCOD_STORE_PASSWORD }}
       TAQVIMCOD_KEY_ALIAS: ${{ secrets.TAQVIMCOD_KEY_ALIAS }}
