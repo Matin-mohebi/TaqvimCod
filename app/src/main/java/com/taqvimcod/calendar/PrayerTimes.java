@@ -38,6 +38,7 @@ public final class PrayerTimes {
     }
 
     private static long toMillis(Calendar base, double hours) {
+        if (Double.isNaN(hours) || Double.isInfinite(hours)) return Long.MIN_VALUE;
         Calendar c=(Calendar)base.clone();
         c.set(Calendar.HOUR_OF_DAY,0); c.set(Calendar.MINUTE,0); c.set(Calendar.SECOND,0); c.set(Calendar.MILLISECOND,0);
         long dayStart=c.getTimeInMillis();
