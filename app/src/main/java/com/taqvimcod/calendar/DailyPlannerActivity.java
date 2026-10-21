@@ -200,7 +200,7 @@ public final class DailyPlannerActivity extends Activity {
                 return true;
             };
             card.setOnLongClickListener(remove);
-            more.setOnClickListener(remove);
+            more.setOnClickListener(v -> remove.onLongClick(v));
             title.setOnLongClickListener(remove);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
             lp.bottomMargin = dp(8);
