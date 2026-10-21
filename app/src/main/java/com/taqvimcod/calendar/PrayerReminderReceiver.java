@@ -59,7 +59,7 @@ public class PrayerReminderReceiver extends BroadcastReceiver {
         Calendar cal=Calendar.getInstance();
         cal.setTimeInMillis(after);
         cal.set(Calendar.HOUR_OF_DAY,12); cal.set(Calendar.MINUTE,0); cal.set(Calendar.SECOND,0); cal.set(Calendar.MILLISECOND,0);
-        PrayerTimes.Day day=PrayerTimes.calculate(cal.getTime(),lat,lon,TimeZone.getDefault());
+        PrayerTimes.Day day=PrayerTimes.calculate(cal.getTime(),lat,lon,TimeZone.getDefault(),SecurePrefs.getInt(context,"prayer_method",0));
         long[] times={day.fajr,day.dhuhr,day.asr,day.maghrib,day.isha};
         long when=times[id];
         if(when==Long.MIN_VALUE)return;
