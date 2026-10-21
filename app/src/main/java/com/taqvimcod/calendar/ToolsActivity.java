@@ -65,14 +65,14 @@ public final class ToolsActivity extends Activity {
         todayLp.topMargin = dp(18);
         root.addView(today, todayLp);
 
-        root.addView(section("ابزارهای تاریخ"));
+        addSection(root, "ابزارهای تاریخ");
         addTool(root, "⇄", "تبدیل تاریخ", "تبدیل میلادی به شمسی و قمری", v -> chooseConversionDate());
         addTool(root, "↔", "فاصلهٔ بین دو تاریخ", "محاسبهٔ تعداد روزهای بین دو تاریخ دلخواه", v -> chooseRangeStart());
         addTool(root, "🌱", "شمارش معکوس نوروز", "تعداد روزهای باقی‌مانده تا آغاز سال شمسی", v -> showNowruz());
-        root.addView(section("اشتراک‌گذاری"));
+        addSection(root, "اشتراک‌گذاری");
         addTool(root, "▣", "کپی تاریخ امروز", "کپی تاریخ شمسی، میلادی و قمری در کلیپ‌بورد", v -> copyToday());
         addTool(root, "↗", "اشتراک‌گذاری تاریخ", "ارسال تاریخ امروز به برنامه‌های دیگر", v -> shareToday());
-        root.addView(section("دربارهٔ ابزارها"));
+        addSection(root, "دربارهٔ ابزارها");
         TextView note = label("محاسبه‌ها روی خود دستگاه انجام می‌شوند. تاریخ قمری بر پایهٔ تقویم حسابی است و ممکن است با اعلام رسمی محلی یک روز تفاوت داشته باشد.", 13, pal.textSub, false);
         note.setPadding(dp(15), dp(14), dp(15), dp(14));
         note.setBackground(round(pal.surface, 16));
@@ -198,14 +198,12 @@ public final class ToolsActivity extends Activity {
         parent.addView(card, lp);
     }
 
-    private void section(String text) {
+    private void addSection(LinearLayout parent, String text) {
         TextView t = label(text, 14, pal.accent, true);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.topMargin = dp(22);
         lp.bottomMargin = dp(2);
-        body = null;
-        // Section is appended to the root in onCreate via the active content container.
-        ((LinearLayout) ((ScrollView) findViewById(android.R.id.content).getChildAt(0)).getChildAt(0)).addView(t, lp);
+        parent.addView(t, lp);
     }
 
     private TextView label(String text, float size, int color, boolean bold) {
