@@ -174,8 +174,8 @@ public final class WorldCalendarActivity extends Activity {
 
     private GridLayout.LayoutParams cellParams(int height) {
         GridLayout.LayoutParams p = new GridLayout.LayoutParams(
-                GridLayout.spec(GridLayout.UNDEFINED, 1f),
-                GridLayout.spec(GridLayout.UNDEFINED));
+                GridLayout.spec(GridLayout.UNDEFINED),
+                GridLayout.spec(GridLayout.UNDEFINED, 1f));
         p.width = 0;
         p.height = dp(height);
         p.setMargins(dp(1), dp(1), dp(1), dp(1));
