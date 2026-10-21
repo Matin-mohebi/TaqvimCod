@@ -31,6 +31,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +56,7 @@ public class MainActivity extends Activity {
     private LinearLayout barWrap, chipsRow, panel;
     private View statusSpacer;
     private TextView tvTodayBtn, tvSettingsBtn, tvMonthYear, tvPrev, tvNext,
-            tvDateMain, tvDateSub, tvEventsTitle, tvSyncBadge;
+            tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge;
     private FrameLayout countdownCard;
     private TextView tvCountDays, tvCountLabel, tvCountName;
     private MonthView month;
@@ -264,6 +267,11 @@ public class MainActivity extends Activity {
         lpSub.topMargin = dp(2);
         tvDateSub = text("", 12, pal.textSub, Font.REGULAR, false);
         header.addView(tvDateSub, lpSub);
+
+        tvLiveClock = text("", 18, pal.accent, Font.SEMIBOLD, true);
+        tvLiveClock.setPadding(0, dp(8), 0, dp(2));
+        tvLiveClock.setContentDescription(fa ? "ساعت زنده دستگاه" : "Live device clock");
+        header.addView(tvLiveClock, new LinearLayout.LayoutParams(-2, -2));
 
         chipsRow = new LinearLayout(this);
         chipsRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -806,10 +814,22 @@ public class MainActivity extends Activity {
 
     // ---------------- lifecycle / live sync ----------------
 
+    private final Runnable liveClockTick = new Runnable() {
+        @Override public void run() {
+            if (destroyed || isFinishing() || tvLiveClock == null) return;
+            Locale clockLocale = fa ? new Locale("fa", "IR") : Locale.getDefault();
+            SimpleDateFormat format = new SimpleDateFormat(fa ? "HH:mm:ss" : "h:mm:ss a", clockLocale);
+            tvLiveClock.setText(S.d(MainActivity.this, format.format(new Date())));
+            ui.postDelayed(this, 1000L);
+        }
+    };
+
     @Override
     protected void onResume() {
         super.onResume();
         applySecureFlag();
+        ui.removeCallbacks(liveClockTick);
+        ui.post(liveClockTick);
         if (observer == null) {
             observer = new ContentObserver(new Handler()) {
                 @Override
@@ -832,6 +852,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        ui.removeCallbacks(liveClockTick);
         if (obsRegistered) {
             try {
                 getContentResolver().unregisterContentObserver(observer);
