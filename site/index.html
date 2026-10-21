@@ -88,5 +88,6 @@ document.getElementById('greg-date').textContent='میلادی · '+gdate;
 }
 update();setInterval(update,1000);
 })();
+if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); }); }
 </script>
 </body></html>
