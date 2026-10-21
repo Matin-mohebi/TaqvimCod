@@ -8,7 +8,7 @@
 **شمسی · میلادی · قمری · رویدادها · اوقات شرعی · قبله‌نما**
 
 [![Android build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml)
-[![Latest code](https://img.shields.io/badge/version-1.5.0-0f766e?style=flat-square)](CHANGELOG.md)
+[![Latest code](https://img.shields.io/badge/version-1.6.0-0f766e?style=flat-square)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-334155?style=flat-square)](#-وضعیت-پروژه)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-0f766e?style=flat-square)](PRIVACY.md)
 [![License](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)](LICENSE)
@@ -29,7 +29,7 @@
 
 **تقویم (Taqvim)** یک تقویم فارسی برای Android با رابط راست‌چین، تاریخ‌های چندگانه و ابزارهای کاربردی روزانه است. پروژهٔ iOS نیز در پوشهٔ `ios/` نگه‌داری می‌شود. هدف این پروژه فقط نمایش روزها نیست؛ رویدادهای تقویم دستگاه، تعطیلات، شمارش معکوس مناسبت بعدی و ابزارهای اوقات شرعی هم در یک تجربهٔ منسجم کنار هم قرار می‌گیرند.
 
-> نسخهٔ کد فعلی: **Android 1.5.0** · کد نسخهٔ اندروید: **7**
+> نسخهٔ کد فعلی: **Android 1.6.0** · کد نسخهٔ اندروید: **8**
 
 ## ✨ امکانات
 
@@ -37,6 +37,7 @@
 |---|---|
 | 🧮 ابزارهای تاریخ | تبدیل تاریخ شمسی/میلادی، فاصلهٔ دو تاریخ و شمارش معکوس نوروز |
 | ✨ مرکز هوشمند | صفحهٔ متحرک با ساعت جهانی تهران، لندن، نیویورک و توکیو؛ فهرست مناسبت‌های پیش‌رو |
+| 🌐 تقویم بین‌المللی | نمای ماهانهٔ میلادی؛ لمس هر روز برای دیدن معادل شمسی، قمری و مناسبت‌ها |
 | 🎞️ طراحی | کارت‌های برجسته، گرادیان و انیمیشن‌های ورود و لمس |
 | 🗓️ تقویم | تقویم جلالی، ناوبری ماه، انتخاب مستقیم ماه و سال، حرکت بین ماه‌ها با کشیدن صفحه |
 | 🌍 تاریخ‌ها | نمایش تاریخ شمسی، میلادی و قمری؛ کپی و اشتراک‌گذاری هر سه تاریخ |
