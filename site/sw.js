@@ -1,5 +1,5 @@
 /* TaqvimCod landing — minimal offline-first service worker */
-var CACHE = "taqvimcod-v4";
+var CACHE = "taqvimcod-v5";
 var ASSETS = [
   "./",
   "./index.html",
