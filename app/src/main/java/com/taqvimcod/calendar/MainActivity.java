@@ -242,6 +242,11 @@ public class MainActivity extends Activity {
         navRow.addView(tvPrev);
         tvMonthYear = text("", 20, pal.text, Font.SEMIBOLD, true);
         tvMonthYear.setGravity(Gravity.CENTER);
+        tvMonthYear.setContentDescription(fa
+                ? "انتخاب ماه و سال؛ برای رفتن مستقیم به ماه دلخواه لمس کنید"
+                : "Choose month and year; tap to jump to a month");
+        tvMonthYear.setFocusable(true);
+        tvMonthYear.setOnClickListener(v -> openMonthPicker());
         navRow.addView(tvMonthYear, new LinearLayout.LayoutParams(0, -2, 1f));
         tvNext = text("›", 26, pal.accent, Font.BOLD, true);
         tvNext.setContentDescription(S.t(this, "next_month"));
@@ -409,6 +414,53 @@ public class MainActivity extends Activity {
                 .setPositiveButton(S.t(this, "grant"),
                         (d, w2) -> CalendarRepo.request(this))
                 .setNegativeButton(S.t(this, "cancel"), null)
+                .show();
+    }
+
+    /**
+     * Lets users jump directly to a Jalali month instead of repeatedly tapping
+     * the previous/next controls. Uses native pickers and keeps the current UI style.
+     */
+    private void openMonthPicker() {
+        final String[] monthNames = S.months(this);
+        LinearLayout choices = new LinearLayout(this);
+        choices.setOrientation(LinearLayout.HORIZONTAL);
+        choices.setGravity(Gravity.CENTER);
+        choices.setPadding(dp(16), dp(12), dp(16), dp(8));
+
+        android.widget.NumberPicker monthPicker = new android.widget.NumberPicker(this);
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(monthNames.length - 1);
+        monthPicker.setDisplayedValues(monthNames);
+        monthPicker.setValue(curJm - 1);
+        monthPicker.setWrapSelectorWheel(true);
+        monthPicker.setContentDescription(fa ? "ماه شمسی" : "Jalali month");
+
+        android.widget.NumberPicker yearPicker = new android.widget.NumberPicker(this);
+        yearPicker.setMinValue(1200);
+        yearPicker.setMaxValue(1600);
+        yearPicker.setValue(Math.max(1200, Math.min(1600, curJy)));
+        yearPicker.setWrapSelectorWheel(false);
+        yearPicker.setContentDescription(fa ? "سال شمسی" : "Jalali year");
+
+        choices.addView(monthPicker, new LinearLayout.LayoutParams(0, -2, 1.15f));
+        choices.addView(yearPicker, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        new AlertDialog.Builder(new ContextThemeWrapper(this,
+                pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light))
+                .setTitle(fa ? "رفتن به ماه دلخواه" : "Go to month")
+                .setView(choices)
+                .setNegativeButton(fa ? "انصراف" : "Cancel", (d, which) -> d.dismiss())
+                .setPositiveButton(fa ? "نمایش ماه" : "Show month", (d, which) -> {
+                    curJy = yearPicker.getValue();
+                    curJm = monthPicker.getValue() + 1;
+                    selJy = curJy;
+                    selJm = curJm;
+                    int len = Dates.jalaaliMonthLength(curJy, curJm);
+                    if (selJd < 1) selJd = 1;
+                    if (selJd > len) selJd = len;
+                    refreshAll();
+                })
                 .show();
     }
 
