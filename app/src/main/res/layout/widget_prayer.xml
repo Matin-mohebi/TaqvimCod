@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/prayer_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/widget_bg">
+    <TextView android:id="@+id/prayer_widget_city" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="اوقات شرعی" android:textColor="#A9ECE5" android:textSize="12sp"/>
+    <TextView android:id="@+id/prayer_widget_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="امروز" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold"/>
+    <TextView android:id="@+id/prayer_widget_times1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="صبح --:--  ظهر --:--  عصر --:--" android:textColor="#FFFFFF" android:textSize="12sp" android:paddingTop="8dp"/>
+    <TextView android:id="@+id/prayer_widget_times2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="مغرب --:--  عشا --:--" android:textColor="#CFE5E3" android:textSize="12sp" android:paddingTop="4dp"/>
+</LinearLayout>
