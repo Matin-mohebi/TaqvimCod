@@ -12,7 +12,8 @@
 ### چه داده‌هایی پردازش می‌شود؟
 1. **رویدادهای تقویم** — فقط از طریق تقویم سیستم گوشی (اکانت گوگل خودِ کاربر) خوانده و نوشته می‌شوند. برنامه کپی جداگانه‌ای از رویدادها در سرور خودش ذخیره نمی‌کند؛ ارائه‌دهنده تقویم ممکن است طبق تنظیمات همگام‌سازی خودش نسخه ابری داشته باشد.
 2. **تنظیمات برنامه** (تم، زبان، تصحیح قمری) — روی خود دستگاه با **رمزنگاری AES-256-GCM** و کلید داخل **Android Keystore** ذخیره می‌شوند؛ در حالت عادی کلید از طریق API برنامه قابل خواندن نیست؛ در دستگاه‌هایی که Android Keystore در دسترس نباشد، برنامه از کلید محلیِ جایگزین استفاده می‌کند که سطح حفاظت آن با Keystore یکسان نیست.
-3. **داده‌های شخصی حساس** (موقعیت مکانی، مخاطبین، دوربین، میکروفون، عکس) — هیچ‌کدام درخواست یا پردازش نمی‌شوند.
+3. **موقعیت مکانی دستگاه** — برنامه مجوز مکان‌یابی گوشی را درخواست نمی‌کند. برای محاسبهٔ اوقات شرعی، کاربر می‌تواند نام شهر و مختصات را دستی وارد کند؛ این مختصات در تنظیمات محلی دستگاه ذخیره و برای محاسبات اوقات شرعی و قبله استفاده می‌شوند. جهت حسگر گوشی نیز فقط برای نمایش قبله‌نما روی دستگاه پردازش می‌شود.
+4. **اعلان‌ها** — یادآوری اوقات شرعی اختیاری است. در نسخه‌های اندروید مربوطه، مجوز اعلان درخواست می‌شود و اعلان‌ها به‌صورت محلی زمان‌بندی می‌شوند. برای باززمان‌بندی پس از راه‌اندازی مجدد، گیرندهٔ راه‌اندازی دستگاه استفاده می‌شود.
 
 ### پشتیبان‌گیری ابری
 پشتیبان‌گیری خودکار اندروید و انتقال داده بین دستگاه‌ها برای این برنامه **غیرفعال** است (`allowBackup=false` + `dataExtractionRules`).
@@ -40,7 +41,8 @@ Last updated: October 2025
 ### What data is processed?
 1. **Calendar events** — read/written only through the device's system calendar provider (the user's own Google account). The app does not copy events to its own server. A calendar provider may keep a cloud copy according to its sync settings.
 2. **App settings** (theme, language, Hijri correction) — stored on-device, encrypted with **AES-256-GCM** using a key inside the **Android Keystore**; the Android Keystore key is not exposed through the app API under normal operation. If Android Keystore is unavailable, a local fallback key is used and does not provide the same protection level.
-3. **Sensitive personal data** (location, contacts, camera, microphone, photos) — never requested or processed.
+3. **Device location** — the app does not request the phone location permission. For prayer-time calculations, users may manually enter a city name and coordinates; those coordinates are stored in local settings and used for prayer-time and Qibla calculations. Device orientation sensor readings are processed locally for the Qibla compass.
+4. **Notifications** — prayer reminders are optional. On relevant Android versions, notification permission is requested and reminders are scheduled locally. A boot receiver is used to reschedule reminders after a device restart.
 
 ### Cloud backup
 Android auto-backup and device-to-device migration are **disabled** for this app (`allowBackup=false` + `dataExtractionRules`).
