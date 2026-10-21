@@ -37,7 +37,7 @@ public class PrayerWidgetProvider extends AppWidgetProvider {
         String city=SecurePrefs.getString(c,"prayer_city","زنجان");
         double lat=parse(SecurePrefs.getString(c,"prayer_lat","36.6736"),36.6736);
         double lon=parse(SecurePrefs.getString(c,"prayer_lon","48.4787"),48.4787);
-        PrayerTimes.Day d=PrayerTimes.calculate(new Date(),lat,lon,TimeZone.getDefault());
+        PrayerTimes.Day d=PrayerTimes.calculate(new Date(),lat,lon,TimeZone.getDefault(),SecurePrefs.getInt(c,"prayer_method",0));
         SimpleDateFormat time=new SimpleDateFormat("HH:mm",Locale.getDefault());
         RemoteViews v=new RemoteViews(c.getPackageName(),R.layout.widget_prayer);
         v.setTextViewText(R.id.prayer_widget_city,city+" • اوقات شرعی");
