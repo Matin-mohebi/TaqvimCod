@@ -66,7 +66,8 @@ public final class ToolsActivity extends Activity {
         root.addView(today, todayLp);
 
         addSection(root, "ابزارهای تاریخ");
-        addTool(root, "⇄", "تبدیل تاریخ", "تبدیل میلادی به شمسی و قمری", v -> chooseConversionDate());
+        addTool(root, "⇄", "تبدیل تاریخ میلادی", "تبدیل میلادی به شمسی و قمری", v -> chooseConversionDate());
+        addTool(root, "☼", "تبدیل تاریخ شمسی", "انتخاب تاریخ شمسی و نمایش معادل میلادی و قمری", v -> chooseJalaliDate());
         addTool(root, "↔", "فاصلهٔ بین دو تاریخ", "محاسبهٔ تعداد روزهای بین دو تاریخ دلخواه", v -> chooseRangeStart());
         addTool(root, "🌱", "شمارش معکوس نوروز", "تعداد روزهای باقی‌مانده تا آغاز سال شمسی", v -> showNowruz());
         addSection(root, "اشتراک‌گذاری");
@@ -86,13 +87,79 @@ public final class ToolsActivity extends Activity {
             Dates.JDate j = Dates.toJalaali(y, m + 1, d);
             int jdn = Dates.g2d(y, m + 1, d);
             Dates.HDate h = Dates.hijriFromJdn(jdn, Prefs.hijriAdj(this));
-            String weekday = new SimpleDateFormat("EEEE", new Locale("fa", "IR")).format(new Date(y - 1900, m, d));
+            Calendar selected = Calendar.getInstance();
+            selected.clear();
+            selected.set(y, m, d);
+            String weekday = new SimpleDateFormat("EEEE", new Locale("fa", "IR")).format(selected.getTime());
             String result = "میلادی: " + y + "/" + two(m + 1) + "/" + two(d)
                     + "\nشمسی: " + j.jy + "/" + two(j.jm) + "/" + two(j.jd)
                     + "\nقمری (حسابی): " + h.hy + "/" + two(h.hm) + "/" + two(h.hd)
                     + "\nروز هفته: " + weekday;
             showResult("نتیجهٔ تبدیل تاریخ", result);
         }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    /** Lets the user select a Jalali date directly, then converts it without network access. */
+    private void chooseJalaliDate() {
+        Dates.JDate current = Dates.todayJ();
+        LinearLayout fields = new LinearLayout(this);
+        fields.setGravity(Gravity.CENTER);
+        fields.setPadding(dp(12), dp(8), dp(12), dp(8));
+
+        android.widget.NumberPicker year = new android.widget.NumberPicker(this);
+        year.setMinValue(1200);
+        year.setMaxValue(1600);
+        year.setValue(Math.max(1200, Math.min(1600, current.jy)));
+        year.setWrapSelectorWheel(false);
+        year.setContentDescription("سال شمسی");
+
+        android.widget.NumberPicker month = new android.widget.NumberPicker(this);
+        String[] months = {"فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"};
+        month.setMinValue(1);
+        month.setMaxValue(12);
+        month.setDisplayedValues(months);
+        month.setValue(current.jm);
+        month.setWrapSelectorWheel(true);
+        month.setContentDescription("ماه شمسی");
+
+        android.widget.NumberPicker day = new android.widget.NumberPicker(this);
+        day.setMinValue(1);
+        day.setMaxValue(Dates.jalaaliMonthLength(year.getValue(), month.getValue()));
+        day.setValue(Math.min(current.jd, day.getMaxValue()));
+        day.setWrapSelectorWheel(true);
+        day.setContentDescription("روز ماه");
+
+        android.widget.NumberPicker.OnValueChangeListener updateDays = (picker, oldValue, newValue) -> {
+            int max = Dates.jalaaliMonthLength(year.getValue(), month.getValue());
+            day.setMaxValue(max);
+            if (day.getValue() > max) day.setValue(max);
+        };
+        year.setOnValueChangedListener(updateDays);
+        month.setOnValueChangedListener(updateDays);
+
+        fields.addView(day, new LinearLayout.LayoutParams(0, -2, 0.7f));
+        fields.addView(month, new LinearLayout.LayoutParams(0, -2, 1.3f));
+        fields.addView(year, new LinearLayout.LayoutParams(0, -2, 0.9f));
+
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("انتخاب تاریخ شمسی")
+                .setView(fields)
+                .setNegativeButton("انصراف", null)
+                .setPositiveButton("تبدیل", (dialog, which) -> {
+                    int jy = year.getValue(), jm = month.getValue(), jd = day.getValue();
+                    Dates.GDate g = Dates.toGregorian(jy, jm, jd);
+                    int jdn = Dates.j2d(jy, jm, jd);
+                    Dates.HDate h = Dates.hijriFromJdn(jdn, Prefs.hijriAdj(this));
+                    Calendar date = Calendar.getInstance();
+                    date.clear();
+                    date.set(g.gy, g.gm - 1, g.gd);
+                    String weekday = new SimpleDateFormat("EEEE", new Locale("fa", "IR")).format(date.getTime());
+                    String result = "شمسی: " + jy + "/" + two(jm) + "/" + two(jd)
+                            + "\\nمیلادی: " + g.gy + "/" + two(g.gm) + "/" + two(g.gd)
+                            + "\\nقمری (حسابی): " + h.hy + "/" + two(h.hm) + "/" + two(h.hd)
+                            + "\\nروز هفته: " + weekday;
+                    showResult("نتیجهٔ تبدیل تاریخ", result);
+                }).show();
     }
 
     private void chooseRangeStart() {
@@ -110,7 +177,9 @@ public final class ToolsActivity extends Activity {
                 Toast.makeText(this, "حالا تاریخ دوم را انتخاب کن", Toast.LENGTH_SHORT).show();
                 pickRangeDate();
             } else {
-                long days = Math.abs(range[1].getTimeInMillis() - range[0].getTimeInMillis()) / 86400000L;
+                int jdnA = Dates.g2d(range[0].get(Calendar.YEAR), range[0].get(Calendar.MONTH) + 1, range[0].get(Calendar.DAY_OF_MONTH));
+                int jdnB = Dates.g2d(range[1].get(Calendar.YEAR), range[1].get(Calendar.MONTH) + 1, range[1].get(Calendar.DAY_OF_MONTH));
+                long days = Math.abs((long) jdnB - jdnA);
                 Dates.JDate a = Dates.toJalaali(range[0].get(Calendar.YEAR), range[0].get(Calendar.MONTH) + 1, range[0].get(Calendar.DAY_OF_MONTH));
                 Dates.JDate b = Dates.toJalaali(range[1].get(Calendar.YEAR), range[1].get(Calendar.MONTH) + 1, range[1].get(Calendar.DAY_OF_MONTH));
                 showResult("فاصلهٔ دو تاریخ", "فاصله: " + days + " روز\nتاریخ اول شمسی: " + a.jy + "/" + two(a.jm) + "/" + two(a.jd)
@@ -130,7 +199,8 @@ public final class ToolsActivity extends Activity {
         today.set(Calendar.MINUTE, 0);
         today.set(Calendar.SECOND, 0);
         today.set(Calendar.MILLISECOND, 0);
-        long days = (target.getTimeInMillis() - today.getTimeInMillis()) / 86400000L;
+        long days = (long) Dates.g2d(next.gy, next.gm, next.gd)
+                - Dates.g2d(today.get(Calendar.YEAR), today.get(Calendar.MONTH) + 1, today.get(Calendar.DAY_OF_MONTH));
         showResult("شمارش معکوس نوروز", days == 0 ? "نوروز امروز است؛ سال نو مبارک! 🌱" :
                 "تا اول فروردین " + (now.jy + 1) + "، " + Math.max(0, days) + " روز باقی مانده است.\n"
                         + "تاریخ میلادی: " + next.gy + "/" + two(next.gm) + "/" + two(next.gd));
