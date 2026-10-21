@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
 
     private LinearLayout barWrap, chipsRow, panel;
     private View statusSpacer;
-    private TextView tvTodayBtn, tvSettingsBtn, tvMonthYear, tvPrev, tvNext,
+    private TextView tvTodayBtn, tvSettingsBtn, tvPrayerBtn, tvMonthYear, tvPrev, tvNext,
             tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge;
     private FrameLayout countdownCard;
     private TextView tvCountDays, tvCountLabel, tvCountName;
@@ -224,6 +224,17 @@ public class MainActivity extends Activity {
                 round(0x24FFFFFF, 19), null));
         tvSettingsBtn.setOnClickListener(v -> UiDialogs.settings(this));
         barRow.addView(tvSettingsBtn, lpSet);
+
+        tvPrayerBtn = text("☪", 17, pal.onGrad, Font.MEDIUM, false);
+        tvPrayerBtn.setContentDescription(fa ? "اوقات شرعی و قبله‌نما" : "Prayer times and Qibla");
+        tvPrayerBtn.setGravity(Gravity.CENTER);
+        tvPrayerBtn.setPadding(dp(9), dp(5), dp(9), dp(5));
+        tvPrayerBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
+        tvPrayerBtn.setOnClickListener(v -> startActivity(new Intent(this, PrayerActivity.class)));
+        LinearLayout.LayoutParams lpPrayer = new LinearLayout.LayoutParams(-2, -2);
+        lpPrayer.leftMargin = dp(5);
+        barRow.addView(tvPrayerBtn, lpPrayer);
         barWrap.addView(barRow);
 
         // ---- header card ----
