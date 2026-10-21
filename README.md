@@ -8,7 +8,7 @@
 **شمسی · میلادی · قمری · رویدادها · اوقات شرعی · قبله‌نما**
 
 [![Android build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/android-build.yml/badge.svg?branch=main)](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/android-build.yml)
-[![Latest code](https://img.shields.io/badge/version-1.2.0-0f766e?style=flat-square)](CHANGELOG.md)
+[![Latest code](https://img.shields.io/badge/version-1.3.0-0f766e?style=flat-square)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-334155?style=flat-square)](#-وضعیت-پروژه)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-0f766e?style=flat-square)](PRIVACY.md)
 [![License](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)](LICENSE)
@@ -29,7 +29,7 @@
 
 **تقویم (Taqvim)** یک تقویم فارسی برای Android با رابط راست‌چین، تاریخ‌های چندگانه و ابزارهای کاربردی روزانه است. پروژهٔ iOS نیز در پوشهٔ `ios/` نگه‌داری می‌شود. هدف این پروژه فقط نمایش روزها نیست؛ رویدادهای تقویم دستگاه، تعطیلات، شمارش معکوس مناسبت بعدی و ابزارهای اوقات شرعی هم در یک تجربهٔ منسجم کنار هم قرار می‌گیرند.
 
-> نسخهٔ کد فعلی: **1.2.0** · کد نسخهٔ اندروید: **4**
+> نسخهٔ کد فعلی: **1.3.0** · کد نسخهٔ اندروید: **5**
 
 ## ✨ امکانات
 
@@ -107,6 +107,7 @@ TaqvimCod/
 - [x] تقویم شمسی و نمایش تاریخ‌های چندگانه
 - [x] نمایش مناسبت‌ها و رویدادهای تقویم دستگاه
 - [x] ابزار اوقات شرعی، قبله‌نما، یادآوری و ویجت
+- [x] جست‌وجوی محلی رویدادها در ماه جاری
 - [x] ساخت خودکار APK آزمایشی
 - [ ] انتشار Release پایدار با امضای رسمی
 - [ ] تکمیل و اعتبارسنجی انتشار عمومی نسخهٔ iOS
