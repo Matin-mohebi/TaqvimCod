@@ -515,7 +515,7 @@ public class MainActivity extends Activity {
                                 Dates.JDate eventDate = Dates.d2j(jdn);
                                 String dateLabel = S.fmtJDate(this, eventDate);
                                 String timeLabel = ev.allDay ? S.t(this, "all_day_label") : S.fmtTime(this, ev.begin);
-                                labels[i] = dateLabel + "  ·  " + timeLabel + "\\n" + ev.title;
+                                labels[i] = dateLabel + "  ·  " + timeLabel + "\n" + ev.title;
                             }
                             new AlertDialog.Builder(new ContextThemeWrapper(this,
                                     pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light))
