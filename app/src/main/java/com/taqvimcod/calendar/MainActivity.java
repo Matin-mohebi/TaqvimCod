@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -55,7 +56,7 @@ public class MainActivity extends Activity {
 
     private LinearLayout barWrap, chipsRow, panel;
     private View statusSpacer;
-    private TextView tvTodayBtn, tvSettingsBtn, tvPrayerBtn, tvMonthYear, tvPrev, tvNext,
+    private TextView tvTodayBtn, tvSettingsBtn, tvPrayerBtn, tvSearchBtn, tvMonthYear, tvPrev, tvNext,
             tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge;
     private FrameLayout countdownCard;
     private TextView tvCountDays, tvCountLabel, tvCountName;
@@ -213,6 +214,18 @@ public class MainActivity extends Activity {
                 round(0x24FFFFFF, 19), null));
         tvTodayBtn.setOnClickListener(v -> { resetToToday(); refreshAll(); });
         barRow.addView(tvTodayBtn, new LinearLayout.LayoutParams(-2, -2));
+
+        // Search calendar events in the visible Jalali month.
+        tvSearchBtn = text("⌕", 22, pal.onGrad, Font.MEDIUM, false);
+        tvSearchBtn.setContentDescription(fa ? "جست‌وجوی رویدادهای این ماه" : "Search this month's events");
+        tvSearchBtn.setGravity(Gravity.CENTER);
+        tvSearchBtn.setPadding(dp(8), dp(4), dp(8), dp(4));
+        tvSearchBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
+        tvSearchBtn.setOnClickListener(v -> openEventSearch());
+        LinearLayout.LayoutParams lpSearch = new LinearLayout.LayoutParams(-2, -2);
+        lpSearch.leftMargin = dp(4);
+        barRow.addView(tvSearchBtn, lpSearch);
 
         LinearLayout.LayoutParams lpSet = new LinearLayout.LayoutParams(-2, -2);
         lpSet.leftMargin = dp(7);
@@ -437,6 +450,78 @@ public class MainActivity extends Activity {
                         (d, w2) -> CalendarRepo.request(this))
                 .setNegativeButton(S.t(this, "cancel"), null)
                 .show();
+    }
+
+    /**
+     * Searches event titles, descriptions and locations in the currently visible month.
+     * Queries run off the UI thread and never leave the device.
+     */
+    private void openEventSearch() {
+        if (!CalendarRepo.hasReadPerm(this)) {
+            askPermission();
+            return;
+        }
+        EditText queryInput = new EditText(this);
+        queryInput.setSingleLine(true);
+        queryInput.setHint(fa ? "عنوان، توضیحات یا مکان رویداد" : "Title, description or location");
+        queryInput.setPadding(dp(16), dp(12), dp(16), dp(12));
+        new AlertDialog.Builder(new ContextThemeWrapper(this,
+                pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light))
+                .setTitle(fa ? "جست‌وجوی رویدادهای ماه" : "Search this month")
+                .setMessage(fa ? S.fmtMonthYear(this, curJy, curJm) : S.fmtMonthYear(this, curJy, curJm))
+                .setView(queryInput)
+                .setNegativeButton(fa ? "لغو" : "Cancel", null)
+                .setPositiveButton(fa ? "جست‌وجو" : "Search", (dialog, which) -> {
+                    String query = queryInput.getText() == null ? "" : queryInput.getText().toString().trim();
+                    if (query.isEmpty()) {
+                        Toast.makeText(this, fa ? "عبارت جست‌وجو را وارد کن" : "Enter a search term",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    final int year = curJy, monthNumber = curJm;
+                    exec.execute(() -> {
+                        int monthLength = Dates.jalaaliMonthLength(year, monthNumber);
+                        long from = Dates.dayStartMillis(Dates.j2d(year, monthNumber, 1));
+                        long to = Dates.dayStartMillis(Dates.j2d(year, monthNumber, monthLength)) + 86400000L;
+                        List<CalendarRepo.Ev> all = CalendarRepo.instances(this, from, to);
+                        List<CalendarRepo.Ev> matches = new ArrayList<>();
+                        String needle = query.toLowerCase(Locale.ROOT);
+                        for (CalendarRepo.Ev ev : all) {
+                            String searchable = ((ev.title == null ? "" : ev.title) + " "
+                                    + (ev.desc == null ? "" : ev.desc) + " "
+                                    + (ev.location == null ? "" : ev.location)).toLowerCase(Locale.ROOT);
+                            if (searchable.contains(needle)) matches.add(ev);
+                        }
+                        postUi(() -> {
+                            if (matches.isEmpty()) {
+                                Toast.makeText(this,
+                                        fa ? "موردی در این ماه پیدا نشد" : "No matching events in this month",
+                                        Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            String[] labels = new String[matches.size()];
+                            for (int i = 0; i < matches.size(); i++) {
+                                CalendarRepo.Ev ev = matches.get(i);
+                                int jdn = ev.allDay ? Dates.jdnOfMillisUtc(ev.begin) : Dates.jdnOfMillis(ev.begin);
+                                Dates.JDate eventDate = Dates.d2j(jdn);
+                                String dateLabel = S.fmtJDate(this, eventDate);
+                                String timeLabel = ev.allDay ? S.t(this, "all_day_label") : S.fmtTime(this, ev.begin);
+                                labels[i] = dateLabel + "  ·  " + timeLabel + "\\n" + ev.title;
+                            }
+                            new AlertDialog.Builder(new ContextThemeWrapper(this,
+                                    pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light))
+                                    .setTitle((fa ? "نتایج جست‌وجو: " : "Search results: ") + matches.size())
+                                    .setItems(labels, (resultsDialog, index) -> {
+                                        CalendarRepo.Ev ev = matches.get(index);
+                                        int jdn = ev.allDay ? Dates.jdnOfMillisUtc(ev.begin) : Dates.jdnOfMillis(ev.begin);
+                                        Dates.JDate eventDate = Dates.d2j(jdn);
+                                        curJy = eventDate.jy; curJm = eventDate.jm;
+                                        selJy = eventDate.jy; selJm = eventDate.jm; selJd = eventDate.jd;
+                                        refreshAll();
+                                    }).setPositiveButton(fa ? "بستن" : "Close", null).show();
+                        });
+                    });
+                }).show();
     }
 
     /**
