@@ -123,7 +123,7 @@ public class PrayerActivity extends Activity implements SensorEventListener {
         long[] times = {day.fajr,day.sunrise,day.dhuhr,day.asr,day.maghrib,day.isha};
         SimpleDateFormat fmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
         for (int i=0;i<out.length;i++) {
-            out[i].setText(Double.isNaN(times[i]) ? "—" : S.d(this, fmt.format(new Date(times[i]))));
+            out[i].setText(times[i] == Long.MIN_VALUE ? "—" : S.d(this, fmt.format(new Date(times[i]))));
         }
     }
 
