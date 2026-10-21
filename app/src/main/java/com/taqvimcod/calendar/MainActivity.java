@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.Context;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.res.ColorStateList;
 import android.database.ContentObserver;
 import android.graphics.Typeface;
@@ -29,6 +31,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -50,14 +55,15 @@ public class MainActivity extends Activity {
 
     private LinearLayout barWrap, chipsRow, panel;
     private View statusSpacer;
-    private TextView tvTodayBtn, tvSettingsBtn, tvMonthYear, tvPrev, tvNext,
-            tvDateMain, tvDateSub, tvEventsTitle, tvSyncBadge;
+    private TextView tvTodayBtn, tvSettingsBtn, tvPrayerBtn, tvMonthYear, tvPrev, tvNext,
+            tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge;
     private FrameLayout countdownCard;
     private TextView tvCountDays, tvCountLabel, tvCountName;
     private MonthView month;
     private SparseArray<MonthView.DayCell> lastCells = new SparseArray<>();
     private boolean rationaleShown;
     private volatile boolean destroyed;
+    private int lastClockJdn = Integer.MIN_VALUE;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -218,6 +224,17 @@ public class MainActivity extends Activity {
                 round(0x24FFFFFF, 19), null));
         tvSettingsBtn.setOnClickListener(v -> UiDialogs.settings(this));
         barRow.addView(tvSettingsBtn, lpSet);
+
+        tvPrayerBtn = text("☪", 17, pal.onGrad, Font.MEDIUM, false);
+        tvPrayerBtn.setContentDescription(fa ? "اوقات شرعی و قبله‌نما" : "Prayer times and Qibla");
+        tvPrayerBtn.setGravity(Gravity.CENTER);
+        tvPrayerBtn.setPadding(dp(9), dp(5), dp(9), dp(5));
+        tvPrayerBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
+        tvPrayerBtn.setOnClickListener(v -> startActivity(new Intent(this, PrayerActivity.class)));
+        LinearLayout.LayoutParams lpPrayer = new LinearLayout.LayoutParams(-2, -2);
+        lpPrayer.leftMargin = dp(5);
+        barRow.addView(tvPrayerBtn, lpPrayer);
         barWrap.addView(barRow);
 
         // ---- header card ----
@@ -242,6 +259,11 @@ public class MainActivity extends Activity {
         navRow.addView(tvPrev);
         tvMonthYear = text("", 20, pal.text, Font.SEMIBOLD, true);
         tvMonthYear.setGravity(Gravity.CENTER);
+        tvMonthYear.setContentDescription(fa
+                ? "انتخاب ماه و سال؛ برای رفتن مستقیم به ماه دلخواه لمس کنید"
+                : "Choose month and year; tap to jump to a month");
+        tvMonthYear.setFocusable(true);
+        tvMonthYear.setOnClickListener(v -> openMonthPicker());
         navRow.addView(tvMonthYear, new LinearLayout.LayoutParams(0, -2, 1f));
         tvNext = text("›", 26, pal.accent, Font.BOLD, true);
         tvNext.setContentDescription(S.t(this, "next_month"));
@@ -257,6 +279,11 @@ public class MainActivity extends Activity {
         lpSub.topMargin = dp(2);
         tvDateSub = text("", 12, pal.textSub, Font.REGULAR, false);
         header.addView(tvDateSub, lpSub);
+
+        tvLiveClock = text("", 18, pal.accent, Font.SEMIBOLD, true);
+        tvLiveClock.setPadding(0, dp(8), 0, dp(2));
+        tvLiveClock.setContentDescription(fa ? "ساعت زنده دستگاه" : "Live device clock");
+        header.addView(tvLiveClock, new LinearLayout.LayoutParams(-2, -2));
 
         chipsRow = new LinearLayout(this);
         chipsRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -412,6 +439,53 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    /**
+     * Lets users jump directly to a Jalali month instead of repeatedly tapping
+     * the previous/next controls. Uses native pickers and keeps the current UI style.
+     */
+    private void openMonthPicker() {
+        final String[] monthNames = S.months(this);
+        LinearLayout choices = new LinearLayout(this);
+        choices.setOrientation(LinearLayout.HORIZONTAL);
+        choices.setGravity(Gravity.CENTER);
+        choices.setPadding(dp(16), dp(12), dp(16), dp(8));
+
+        android.widget.NumberPicker monthPicker = new android.widget.NumberPicker(this);
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(monthNames.length - 1);
+        monthPicker.setDisplayedValues(monthNames);
+        monthPicker.setValue(curJm - 1);
+        monthPicker.setWrapSelectorWheel(true);
+        monthPicker.setContentDescription(fa ? "ماه شمسی" : "Jalali month");
+
+        android.widget.NumberPicker yearPicker = new android.widget.NumberPicker(this);
+        yearPicker.setMinValue(1200);
+        yearPicker.setMaxValue(1600);
+        yearPicker.setValue(Math.max(1200, Math.min(1600, curJy)));
+        yearPicker.setWrapSelectorWheel(false);
+        yearPicker.setContentDescription(fa ? "سال شمسی" : "Jalali year");
+
+        choices.addView(monthPicker, new LinearLayout.LayoutParams(0, -2, 1.15f));
+        choices.addView(yearPicker, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        new AlertDialog.Builder(new ContextThemeWrapper(this,
+                pal.dark ? android.R.style.Theme_Material : android.R.style.Theme_Material_Light))
+                .setTitle(fa ? "رفتن به ماه دلخواه" : "Go to month")
+                .setView(choices)
+                .setNegativeButton(fa ? "انصراف" : "Cancel", (d, which) -> d.dismiss())
+                .setPositiveButton(fa ? "نمایش ماه" : "Show month", (d, which) -> {
+                    curJy = yearPicker.getValue();
+                    curJm = monthPicker.getValue() + 1;
+                    selJy = curJy;
+                    selJm = curJm;
+                    int len = Dates.jalaaliMonthLength(curJy, curJm);
+                    if (selJd < 1) selJd = 1;
+                    if (selJd > len) selJd = len;
+                    refreshAll();
+                })
+                .show();
+    }
+
     private void changeMonth(boolean next) {
         int m = next ? curJm + 1 : curJm - 1, y = curJy;
         if (m > 12) { m = 1; y++; }
@@ -497,6 +571,29 @@ public class MainActivity extends Activity {
         Dates.GDate g = Dates.d2g(jdn);
         Dates.HDate h = Dates.hijriFromJdn(jdn, Prefs.hijriAdj(this));
         tvDateSub.setText(S.fmtGDate(this, g) + "  •  " + S.fmtHDate(this, h));
+        tvDateMain.setContentDescription(fa
+                ? S.fmtJDate(this, sel) + "؛ برای کپی تاریخ، چند لحظه نگه دارید"
+                : S.fmtJDate(this, sel) + "; long press to copy date");
+        tvDateMain.setOnLongClickListener(v -> {
+            String allDates = S.fmtJDate(this, sel) + "\n"
+                    + S.fmtGDate(this, g) + "\n" + S.fmtHDate(this, h);
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(ClipData.newPlainText("Taqvim date", allDates));
+                Toast.makeText(this, fa ? "هر سه تاریخ کپی شدند" : "All three dates copied",
+                        Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
+        tvDateMain.setOnClickListener(v -> {
+            String allDates = S.fmtJDate(this, sel) + "\n"
+                    + S.fmtGDate(this, g) + "\n" + S.fmtHDate(this, h);
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("text/plain");
+            share.putExtra(Intent.EXTRA_SUBJECT, fa ? "تاریخ در تقویم‌کد" : "Date from Taqvim");
+            share.putExtra(Intent.EXTRA_TEXT, allDates);
+            startActivity(Intent.createChooser(share, fa ? "اشتراک‌گذاری تاریخ‌ها" : "Share dates"));
+        });
         chipsRow.removeAllViews();
         List<Holidays.Ev> evs = Holidays.forDay(selJm, selJd, h.hm, h.hd);
         for (Holidays.Ev ev : evs) {
@@ -738,10 +835,28 @@ public class MainActivity extends Activity {
 
     // ---------------- lifecycle / live sync ----------------
 
+    private final Runnable liveClockTick = new Runnable() {
+        @Override public void run() {
+            if (destroyed || isFinishing() || tvLiveClock == null) return;
+            Dates.JDate clockDate = Dates.todayJ();
+            int clockJdn = Dates.j2d(clockDate.jy, clockDate.jm, clockDate.jd);
+            if (lastClockJdn != Integer.MIN_VALUE && clockJdn != lastClockJdn) {
+                refreshAll();
+            }
+            lastClockJdn = clockJdn;
+            Locale clockLocale = fa ? new Locale("fa", "IR") : Locale.getDefault();
+            SimpleDateFormat format = new SimpleDateFormat(fa ? "HH:mm:ss" : "h:mm:ss a", clockLocale);
+            tvLiveClock.setText(S.d(MainActivity.this, format.format(new Date())));
+            ui.postDelayed(this, 1000L);
+        }
+    };
+
     @Override
     protected void onResume() {
         super.onResume();
         applySecureFlag();
+        ui.removeCallbacks(liveClockTick);
+        ui.post(liveClockTick);
         if (observer == null) {
             observer = new ContentObserver(new Handler()) {
                 @Override
@@ -764,6 +879,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        ui.removeCallbacks(liveClockTick);
         if (obsRegistered) {
             try {
                 getContentResolver().unregisterContentObserver(observer);

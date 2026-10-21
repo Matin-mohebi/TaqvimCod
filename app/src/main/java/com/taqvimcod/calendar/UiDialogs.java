@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -249,6 +250,30 @@ public final class UiDialogs {
         } catch (Exception ignored) {}
     }
 
+    private static void showLargeDialog(MainActivity act, String title, LinearLayout content, String positiveLabel) {
+        Context c = act;
+        ScrollView scroll = new ScrollView(c);
+        scroll.setFillViewport(true);
+        scroll.setClipToPadding(false);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.addView(content, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        AlertDialog dialog = new AlertDialog.Builder(themed(act))
+                .setTitle(title)
+                .setView(scroll)
+                .setPositiveButton(positiveLabel, null)
+                .create();
+        dialog.show();
+        if (dialog.getWindow() != null) {
+            int screenWidth = c.getResources().getDisplayMetrics().widthPixels;
+            int screenHeight = c.getResources().getDisplayMetrics().heightPixels;
+            int width = Math.min(screenWidth - dp(c, 28), dp(c, 560));
+            int height = Math.min(screenHeight - dp(c, 120), dp(c, 680));
+            dialog.getWindow().setLayout(width, height);
+        }
+    }
+
     // ================= settings =================
     public static void settings(MainActivity act) {
         Context c = act;
@@ -363,11 +388,7 @@ public final class UiDialogs {
         aboutBtn.setOnClickListener(v -> { UiDialogs.about(act); });
         b.addView(aboutBtn, new LinearLayout.LayoutParams(-2, -2));
 
-        new AlertDialog.Builder(themed(act))
-                .setTitle(S.t(c, "settings"))
-                .setView(b)
-                .setPositiveButton(S.t(c, "ok"), null)
-                .show();
+        showLargeDialog(act, S.t(c, "settings"), b, S.t(c, "ok"));
     }
 
     // ================= privacy & play protect =================
@@ -448,11 +469,7 @@ public final class UiDialogs {
         linkify(tvInsta, Pattern.compile("instagram\\.com/[^\\s]+"));
         b.addView(tvInsta);
 
-        new AlertDialog.Builder(themed(act))
-                .setTitle(S.t(c, "about"))
-                .setView(b)
-                .setPositiveButton(S.t(c, "ok"), null)
-                .show();
+        showLargeDialog(act, S.t(c, "about"), b, S.t(c, "ok"));
     }
 
     private static void addWebsiteButton(MainActivity act, LinearLayout parent, Theme.Pal pal,
@@ -460,10 +477,16 @@ public final class UiDialogs {
         TextView button = chip(act, pal, title, pal.accentSoft, pal.accent);
         button.setClickable(true);
         button.setFocusable(true);
+        button.setTextSize(14);
+        button.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        button.setMinHeight(dp(act, 56));
+        button.setPadding(dp(act, 18), dp(act, 14), dp(act, 18), dp(act, 14));
         button.setContentDescription(title + "؛ باز کردن در مرورگر");
         button.setOnClickListener(v -> openWebsite(act, url));
-        parent.addView(button, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        LinearLayout.LayoutParams websiteLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        websiteLp.bottomMargin = dp(act, 4);
+        parent.addView(button, websiteLp);
     }
 
     private static void openWebsite(Context context, String url) {
