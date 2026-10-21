@@ -14,7 +14,7 @@
 ![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-64748b)
 ![Version](https://img.shields.io/badge/version-1.3.0-0f766e)
-![Build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/android-build.yml/badge.svg)
+![Build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml/badge.svg)
 
 </div>
 
@@ -45,7 +45,7 @@
 
 ## 📦 دریافت APK
 
-1. وارد [آخرین اجراهای GitHub Actions](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/android-build.yml) شو.
+1. وارد [آخرین اجراهای GitHub Actions](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml) شو.
 2. یک اجرای **موفق (Success)** را باز کن.
 3. از بخش **Artifacts** فایل `TaqvimCod-debug-apk` را دریافت کن و ZIP را استخراج کن.
 
