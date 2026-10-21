@@ -235,6 +235,16 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams lpPrayer = new LinearLayout.LayoutParams(-2, -2);
         lpPrayer.leftMargin = dp(5);
         barRow.addView(tvPrayerBtn, lpPrayer);
+        TextView tvToolsBtn = text("▦", 17, pal.onGrad, Font.MEDIUM, false);
+        tvToolsBtn.setContentDescription("ابزارهای تقویم");
+        tvToolsBtn.setGravity(Gravity.CENTER);
+        tvToolsBtn.setPadding(dp(9), dp(5), dp(9), dp(5));
+        tvToolsBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
+        tvToolsBtn.setOnClickListener(v -> startActivity(new Intent(this, ToolsActivity.class)));
+        LinearLayout.LayoutParams lpTools = new LinearLayout.LayoutParams(-2, -2);
+        lpTools.leftMargin = dp(5);
+        barRow.addView(tvToolsBtn, lpTools);
         barWrap.addView(barRow);
 
         // ---- header card ----
