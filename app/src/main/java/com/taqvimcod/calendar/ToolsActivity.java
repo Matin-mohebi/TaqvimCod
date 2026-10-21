@@ -190,6 +190,10 @@ public final class ToolsActivity extends Activity {
 
     private void showNowruz() {
         Dates.JDate now = Dates.todayJ();
+        if (now.jm == 1 && now.jd == 1) {
+            showResult("شمارش معکوس نوروز", "نوروز امروز است؛ سال نو مبارک! 🌱");
+            return;
+        }
         Dates.GDate next = Dates.toGregorian(now.jy + 1, 1, 1);
         Calendar target = Calendar.getInstance();
         target.clear();
