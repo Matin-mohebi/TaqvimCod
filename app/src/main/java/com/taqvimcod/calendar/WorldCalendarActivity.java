@@ -108,6 +108,9 @@ public final class WorldCalendarActivity extends Activity {
 
     private void renderMonth() {
         monthTitle.setText(new SimpleDateFormat("MMMM yyyy", Locale.ENGLISH).format(visible.getTime()));
+        grid.setCameraDistance(dp(7000));
+        grid.setAlpha(0.35f);
+        grid.setRotationY(7f);
         grid.removeAllViews();
         String[] weekdays = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
         for (String day : weekdays) {
@@ -140,9 +143,15 @@ public final class WorldCalendarActivity extends Activity {
             TextView cell = label(String.valueOf(d), 14, isToday ? pal.onGrad : (holiday ? pal.red : pal.text), isToday || holiday);
             cell.setGravity(Gravity.CENTER);
             cell.setBackground(round(isToday ? pal.accent : (holiday ? pal.redSoft : 0x00000000), 13));
-            cell.setOnClickListener(v -> showDay(selected, jdn, day));
+            cell.setOnClickListener(v -> {
+                v.animate().scaleX(0.9f).scaleY(0.9f).setDuration(70).withEndAction(() -> {
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(110).start();
+                    showDay(selected, jdn, day);
+                }).start();
+            });
             grid.addView(cell, cellParams(43));
         }
+        grid.animate().alpha(1f).rotationY(0f).setDuration(260).start();
     }
 
     private void showDay(Calendar date, int jdn, int gd) {
