@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.Context;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.res.ColorStateList;
 import android.database.ContentObserver;
 import android.graphics.Typeface;
@@ -549,6 +551,20 @@ public class MainActivity extends Activity {
         Dates.GDate g = Dates.d2g(jdn);
         Dates.HDate h = Dates.hijriFromJdn(jdn, Prefs.hijriAdj(this));
         tvDateSub.setText(S.fmtGDate(this, g) + "  •  " + S.fmtHDate(this, h));
+        tvDateMain.setContentDescription(fa
+                ? S.fmtJDate(this, sel) + "؛ برای کپی تاریخ، چند لحظه نگه دارید"
+                : S.fmtJDate(this, sel) + "; long press to copy date");
+        tvDateMain.setOnLongClickListener(v -> {
+            String allDates = S.fmtJDate(this, sel) + "\n"
+                    + S.fmtGDate(this, g) + "\n" + S.fmtHDate(this, h);
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(ClipData.newPlainText("Taqvim date", allDates));
+                Toast.makeText(this, fa ? "هر سه تاریخ کپی شدند" : "All three dates copied",
+                        Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
         chipsRow.removeAllViews();
         List<Holidays.Ev> evs = Holidays.forDay(selJm, selJd, h.hm, h.hd);
         for (Holidays.Ev ev : evs) {
