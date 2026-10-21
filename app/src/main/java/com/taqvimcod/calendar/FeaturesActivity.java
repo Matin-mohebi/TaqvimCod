@@ -122,6 +122,8 @@ public final class FeaturesActivity extends Activity {
 
     private void addQuickActions() {
         section("میانبرهای حرفه‌ای");
+        addAction("▦", "تقویم میلادی", "نمای ماهانهٔ بین‌المللی با جزئیات شمسی و قمری", () ->
+                startActivity(new Intent(this, WorldCalendarActivity.class)));
         addAction("⇄", "تبدیل تاریخ", "شمسی، میلادی و قمری", () ->
                 startActivity(new Intent(this, ToolsActivity.class)));
         addAction("☪", "اوقات شرعی و قبله‌نما", "اوقات نماز، روش محاسبه و قطب‌نما", () ->
