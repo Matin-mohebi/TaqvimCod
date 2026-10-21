@@ -132,7 +132,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 		ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 		CODE_SIGN_STYLE = Automatic;
-		CURRENT_PROJECT_VERSION = 4;
+		CURRENT_PROJECT_VERSION = 5;
 		INFOPLIST_FILE = TaqvimCod/Info.plist;
 		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim";
 		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -141,7 +141,7 @@
 			"$(inherited)",
 			"@executable_path/Frameworks",
 		);
-		MARKETING_VERSION = 1.2.0;
+		MARKETING_VERSION = 1.3.0;
 		PRODUCT_BUNDLE_IDENTIFIER = com.taqvimcod.calendar;
 		PRODUCT_NAME = "$(TARGET_NAME)";
 		SWIFT_EMIT_LOC_STRINGS = NO;
@@ -158,7 +158,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 		ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 		CODE_SIGN_STYLE = Automatic;
-		CURRENT_PROJECT_VERSION = 4;
+		CURRENT_PROJECT_VERSION = 5;
 		INFOPLIST_FILE = TaqvimCod/Info.plist;
 		INFOPLIST_KEY_CFBundleDisplayName = "Taqvim";
 		INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -167,7 +167,7 @@
 			"$(inherited)",
 			"@executable_path/Frameworks",
 		);
-		MARKETING_VERSION = 1.2.0;
+		MARKETING_VERSION = 1.3.0;
 		PRODUCT_BUNDLE_IDENTIFIER = com.taqvimcod.calendar;
 		PRODUCT_NAME = "$(TARGET_NAME)";
 		SWIFT_EMIT_LOC_STRINGS = NO;
