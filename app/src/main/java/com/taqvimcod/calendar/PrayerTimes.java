@@ -17,6 +17,11 @@ public final class PrayerTimes {
     }
 
     public static Day calculate(Date date, double latitude, double longitude, TimeZone zone) {
+        return calculate(date, latitude, longitude, zone, 0);
+    }
+
+    /** method: 0 Tehran, 1 Muslim World League, 2 Egyptian, 3 Karachi, 4 ISNA, 5 Umm al-Qura */
+    public static Day calculate(Date date, double latitude, double longitude, TimeZone zone, int method) {
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
             throw new IllegalArgumentException("Coordinates out of range");
         Calendar c = Calendar.getInstance(zone);
