@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
     private SparseArray<MonthView.DayCell> lastCells = new SparseArray<>();
     private boolean rationaleShown;
     private volatile boolean destroyed;
+    private int lastClockJdn = Integer.MIN_VALUE;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -817,6 +818,12 @@ public class MainActivity extends Activity {
     private final Runnable liveClockTick = new Runnable() {
         @Override public void run() {
             if (destroyed || isFinishing() || tvLiveClock == null) return;
+            Dates.JDate clockDate = Dates.todayJ();
+            int clockJdn = Dates.j2d(clockDate.jy, clockDate.jm, clockDate.jd);
+            if (lastClockJdn != Integer.MIN_VALUE && clockJdn != lastClockJdn) {
+                refreshAll();
+            }
+            lastClockJdn = clockJdn;
             Locale clockLocale = fa ? new Locale("fa", "IR") : Locale.getDefault();
             SimpleDateFormat format = new SimpleDateFormat(fa ? "HH:mm:ss" : "h:mm:ss a", clockLocale);
             tvLiveClock.setText(S.d(MainActivity.this, format.format(new Date())));
