@@ -20,6 +20,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".PrayerActivity" android:exported="false" />
+        <activity android:name=".ToolsActivity" android:exported="false" />
 
         <receiver android:name=".PrayerWidgetProvider" android:exported="false">
             <intent-filter>
