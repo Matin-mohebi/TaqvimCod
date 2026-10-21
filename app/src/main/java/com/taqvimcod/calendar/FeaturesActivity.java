@@ -129,6 +129,8 @@ public final class FeaturesActivity extends Activity {
         addAction("☪", "اوقات شرعی و قبله‌نما", "اوقات نماز، روش محاسبه و قطب‌نما", () ->
                 startActivity(new Intent(this, PrayerActivity.class)));
         addAction("✧", "تقویم و رویدادهای گوشی", "ثبت و همگام‌سازی با تقویم دستگاه", () -> finish());
+        addAction("✓", "برنامه‌ریز روزانه", "فهرست کارها، تیک انجام و ذخیرهٔ آفلاین", () ->
+                startActivity(new Intent(this, DailyPlannerActivity.class)));
     }
 
     private void addWorldClocks() {
