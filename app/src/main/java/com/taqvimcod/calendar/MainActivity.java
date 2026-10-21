@@ -257,6 +257,16 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams lpTools = new LinearLayout.LayoutParams(-2, -2);
         lpTools.leftMargin = dp(5);
         barRow.addView(tvToolsBtn, lpTools);
+        TextView tvFeaturesBtn = text("✦", 18, pal.onGrad, Font.MEDIUM, false);
+        tvFeaturesBtn.setContentDescription("مرکز هوشمند تقویم");
+        tvFeaturesBtn.setGravity(Gravity.CENTER);
+        tvFeaturesBtn.setPadding(dp(8), dp(5), dp(8), dp(5));
+        tvFeaturesBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
+                round(0x24FFFFFF, 19), null));
+        tvFeaturesBtn.setOnClickListener(v -> startActivity(new Intent(this, FeaturesActivity.class)));
+        LinearLayout.LayoutParams lpFeatures = new LinearLayout.LayoutParams(-2, -2);
+        lpFeatures.leftMargin = dp(4);
+        barRow.addView(tvFeaturesBtn, lpFeatures);
         barWrap.addView(barRow);
 
         // ---- header card ----
