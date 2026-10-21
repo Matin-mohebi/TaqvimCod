@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -39,6 +41,8 @@ public class PrayerActivity extends Activity implements SensorEventListener {
     private float magneticAzimuth;
     private boolean sensorAvailable;
     private Button reminderButton;
+    private TextView[] prayerTimesViews;
+    private Spinner methodSpinner;
     private static final int REQUEST_NOTIFICATIONS = 813;
 
     private int dp(float value) { return (int)(value * getResources().getDisplayMetrics().density); }
@@ -74,6 +78,28 @@ public class PrayerActivity extends Activity implements SensorEventListener {
         reminderButton = button("");
         reminderButton.setOnClickListener(v -> toggleReminders());
         cityCard.addView(reminderButton);
+        TextView methodLabel=text("روش محاسبه اوقات شرعی",13,pal.textSub,false);
+        methodLabel.setPadding(0,dp(10),0,dp(3));
+        cityCard.addView(methodLabel);
+        methodSpinner=new Spinner(this);
+        String[] methods={"تهران (پیشنهادی برای ایران)","رابطة العالم الإسلامي","مصر","کراچی","ISNA","ام‌القری"};
+        ArrayAdapter<String> methodAdapter=new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,methods);
+        methodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        methodSpinner.setAdapter(methodAdapter);
+        methodSpinner.setSelection(Math.max(0,Math.min(5,SecurePrefs.getInt(this,"prayer_method",0))));
+        cityCard.addView(methodSpinner);
+        methodSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> parent,View view,int position,long id) {
+                SecurePrefs.putInt(PrayerActivity.this,"prayer_method",position);
+                if(prayerTimesViews!=null) renderTimes(prayerTimesViews);
+                PrayerWidgetProvider.updateAll(PrayerActivity.this);
+                if(SecurePrefs.getBoolean(PrayerActivity.this,"prayer_reminders_enabled",false)) {
+                    PrayerReminderReceiver.cancelAll(PrayerActivity.this);
+                    PrayerReminderReceiver.scheduleAll(PrayerActivity.this);
+                }
+            }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
         page.addView(cityCard);
 
         LinearLayout timesCard = card();
@@ -81,6 +107,7 @@ public class PrayerActivity extends Activity implements SensorEventListener {
         timesCard.addView(text(new SimpleDateFormat("EEEE، d MMMM yyyy", new Locale("fa","IR")).format(new Date()), 12, pal.textSub, false));
         String[] names = {"اذان صبح", "طلوع آفتاب", "اذان ظهر", "عصر (محاسباتی)", "غروب آفتاب", "اذان عشا"};
         TextView[] timeViews = new TextView[names.length];
+        prayerTimesViews = timeViews;
         for (int i=0;i<names.length;i++) {
             LinearLayout row = new LinearLayout(this);
             row.setGravity(Gravity.CENTER_VERTICAL);
@@ -165,7 +192,7 @@ public class PrayerActivity extends Activity implements SensorEventListener {
     }
 
     private void renderTimes(TextView[] out) {
-        PrayerTimes.Day day = PrayerTimes.calculate(new Date(), latitude, longitude, TimeZone.getDefault());
+        PrayerTimes.Day day = PrayerTimes.calculate(new Date(), latitude, longitude, TimeZone.getDefault(), SecurePrefs.getInt(this,"prayer_method",0));
         long[] times = {day.fajr,day.sunrise,day.dhuhr,day.asr,day.maghrib,day.isha};
         SimpleDateFormat fmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
         for (int i=0;i<out.length;i++) {
