@@ -574,6 +574,15 @@ public class MainActivity extends Activity {
             }
             return true;
         });
+        tvDateMain.setOnClickListener(v -> {
+            String allDates = S.fmtJDate(this, sel) + "\n"
+                    + S.fmtGDate(this, g) + "\n" + S.fmtHDate(this, h);
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("text/plain");
+            share.putExtra(Intent.EXTRA_SUBJECT, fa ? "تاریخ در تقویم‌کد" : "Date from Taqvim");
+            share.putExtra(Intent.EXTRA_TEXT, allDates);
+            startActivity(Intent.createChooser(share, fa ? "اشتراک‌گذاری تاریخ‌ها" : "Share dates"));
+        });
         chipsRow.removeAllViews();
         List<Holidays.Ev> evs = Holidays.forDay(selJm, selJd, h.hm, h.hd);
         for (Holidays.Ev ev : evs) {
