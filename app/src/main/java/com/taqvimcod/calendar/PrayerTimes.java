@@ -22,16 +22,17 @@ public final class PrayerTimes {
         Calendar c = Calendar.getInstance(zone);
         c.setTime(date);
         int year=c.get(Calendar.YEAR), month=c.get(Calendar.MONTH)+1, day=c.get(Calendar.DAY_OF_MONTH);
-        double jd = julianDay(year, month, day) - longitude / 360.0;
-        double noon = 12.0 - equationOfTime(jd) / 60.0 + zone.getOffset(date.getTime()) / 3600000.0;
+        double jd = julianDay(year, month, day);
+        double noon = 12.0 + zone.getOffset(date.getTime()) / 3600000.0
+                - longitude / 15.0 - equationOfTime(jd) / 60.0;
         double decl = sunDeclination(jd + 0.5);
         double dhuhr = noon;
-        double sunrise = noon - hourAngle(latitude, decl, -0.833) / 15.0;
+        double sunrise = noon - hourAngle(latitude, decl, 0.833) / 15.0;
         double sunset = noon + hourAngle(latitude, decl, -0.833) / 15.0;
-        double fajr = noon - hourAngle(latitude, decl, -18.0) / 15.0;
-        double isha = noon + hourAngle(latitude, decl, -17.5) / 15.0;
-        double asrAltitude = -Math.toDegrees(Math.atan(1.0 / (1.0 + Math.tan(Math.abs(Math.toRadians(latitude)-decl)))));
-        double asr = noon + hourAngle(latitude, decl, asrAltitude) / 15.0;
+        double fajr = noon - hourAngle(latitude, decl, 18.0) / 15.0;
+        double isha = noon + hourAngle(latitude, decl, 17.5) / 15.0;
+        double asrAltitude = Math.toDegrees(Math.atan(1.0 / (1.0 + Math.tan(Math.abs(Math.toRadians(latitude)-decl)))));
+        double asr = noon + hourAngle(latitude, decl, -asrAltitude) / 15.0;
         return new Day(toMillis(c, fajr), toMillis(c, sunrise), toMillis(c, dhuhr),
                 toMillis(c, asr), toMillis(c, sunset), toMillis(c, isha));
     }
