@@ -47,7 +47,7 @@
 
 1. وارد [آخرین اجراهای GitHub Actions](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml) شو.
 2. یک اجرای **موفق (Success)** را باز کن.
-3. از بخش **Artifacts** فایل `TaqvimCod-debug-apk` را دریافت کن و ZIP را استخراج کن.
+3. از بخش **Artifacts** فایل `TaqvimCod-APK` را دریافت کن و ZIP را استخراج کن.
 
 خروجی Debug برای آزمایش است و ممکن است امضای انتشار رسمی نداشته باشد. برای نصب و به‌روزرسانی مطمئن، از یک کلید امضای خصوصی ثابت استفاده می‌شود؛ کلید و رمز آن نباید در مخزن عمومی قرار بگیرند.
 
