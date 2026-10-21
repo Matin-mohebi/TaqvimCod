@@ -13,7 +13,7 @@
 ![Android](https://img.shields.io/badge/Android-10%2B-3DDC84?logo=android&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-64748b)
-![Version](https://img.shields.io/badge/version-1.2.0-0f766e)
+![Version](https://img.shields.io/badge/version-1.3.0-0f766e)
 ![Build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/android-build.yml/badge.svg)
 
 </div>
@@ -24,7 +24,7 @@
 
 **Taqvim** یک تقویم فارسی با رابط راست‌چین و تمرکز بر حریم خصوصی است. محاسبات تاریخ و ابزارهای تاریخ بدون نیاز به اینترنت انجام می‌شوند؛ رویدادهای شخصی با اجازهٔ کاربر از تقویم خود دستگاه خوانده و در همان مسیر ذخیره می‌شوند.
 
-> وضعیت انتشار: نسخهٔ کد 1.2.0 است. فایل APK رسمی فقط زمانی منتشرشده محسوب می‌شود که در بخش [Releases](https://github.com/Matin-mohebi/TaqvimCod/releases) قرار بگیرد. فایل‌های Actions خروجی آزمایشی هستند.
+> وضعیت انتشار: نسخهٔ کد 1.3.0 است. فایل APK رسمی فقط زمانی منتشرشده محسوب می‌شود که در بخش [Releases](https://github.com/Matin-mohebi/TaqvimCod/releases) قرار بگیرد. فایل‌های Actions خروجی آزمایشی هستند.
 
 ## 🚀 امکانات
 
