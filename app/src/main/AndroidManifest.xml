@@ -21,6 +21,7 @@
 
         <activity android:name=".PrayerActivity" android:exported="false" />
         <activity android:name=".ToolsActivity" android:exported="false" />
+        <activity android:name=".FeaturesActivity" android:exported="false" />
 
         <receiver android:name=".PrayerWidgetProvider" android:exported="false">
             <intent-filter>
