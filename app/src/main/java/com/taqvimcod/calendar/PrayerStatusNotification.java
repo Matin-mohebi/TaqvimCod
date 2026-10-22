@@ -3,6 +3,7 @@ package com.taqvimcod.calendar;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import java.util.TimeZone;
 public final class PrayerStatusNotification {
     private static final String CHANNEL = "taqvim_status";
     private static final int ID = 8092;
+    static final String ACTION_REFRESH = "com.taqvimcod.calendar.REFRESH_STATUS_NOTIFICATION";
+    private static final int ALARM_ID = 8093;
     private static final String[] NAMES = {"اذان صبح", "اذان ظهر", "عصر", "اذان مغرب", "اذان عشا"};
 
     private PrayerStatusNotification() {}
@@ -66,11 +69,32 @@ public final class PrayerStatusNotification {
                 .setCategory(Notification.CATEGORY_STATUS)
                 .build();
         try { manager.notify(ID, notification); } catch (SecurityException ignored) { }
+        if (times[next] != Long.MIN_VALUE) scheduleNextUpdate(context, times[next] + 60_000L);
     }
 
     public static void cancel(Context context) {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) manager.cancel(ID);
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarm = refreshPendingIntent(context, PendingIntent.FLAG_NO_CREATE);
+        if (alarms != null && alarm != null) alarms.cancel(alarm);
+        if (alarm != null) alarm.cancel();
+    }
+
+    private static void scheduleNextUpdate(Context context, long when) {
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarms == null || when <= System.currentTimeMillis()) return;
+        PendingIntent alarm = refreshPendingIntent(context, 0);
+        if (alarm == null) return;
+        try { alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, alarm); }
+        catch (SecurityException ignored) { alarms.set(AlarmManager.RTC_WAKEUP, when, alarm); }
+    }
+
+    private static PendingIntent refreshPendingIntent(Context context, int noCreate) {
+        Intent intent = new Intent(context, PrayerStatusReceiver.class).setAction(ACTION_REFRESH);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+        if (noCreate == PendingIntent.FLAG_NO_CREATE) flags = PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE;
+        return PendingIntent.getBroadcast(context, ALARM_ID, intent, flags);
     }
 
     private static double parse(String value, double fallback) {
