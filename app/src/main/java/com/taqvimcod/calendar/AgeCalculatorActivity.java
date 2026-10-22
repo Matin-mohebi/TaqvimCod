@@ -95,7 +95,7 @@ public final class AgeCalculatorActivity extends Activity {
                 try {
                     BahesabTools.AgeResult result = BahesabTools.calculateAge(year.getValue(), month.getValue(), day.getValue());
                     String summary = String.format(Locale.ROOT,
-                        "سن: %d سال، %d ماه و %d روز\nمجموع روزهای سپری‌شده: %d\nروز تا تولد بعدی: %d\nبرج ماه شمسی: %s",
+                        "سن: %d سال، %d ماه و %d روز\nمجموع روزهای سپری‌شده: %d\nمعادل ساعت: %d\nمعادل ثانیه: %d\nروز تا تولد بعدی: %d\nبرج ماه شمسی: %s",
                         result.years, result.months, result.days, result.totalDays,
                         result.totalHours, result.totalSeconds, result.daysToNextBirthday, result.zodiacSign);
                     new AlertDialog.Builder(this).setTitle("نتیجهٔ محاسبه").setMessage(summary).setPositiveButton("باشه", null).show();
