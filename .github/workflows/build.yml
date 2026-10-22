@@ -114,9 +114,9 @@ jobs:
         run: |
           VERSION=$(grep -oP 'versionName\s+"\K[^"]+' ../app/build.gradle | head -1)
           cd desktop-dist/TaqvimCod
-          zip -q -r "../../TaqvimCod-v${VERSION}-win-x64.zip" TaqvimCod-win_x64.exe resources.neu
-          zip -q -r "../../TaqvimCod-v${VERSION}-linux-x64.zip" TaqvimCod-linux_x64 resources.neu
-          cd ../..
+          zip -q -r "../../../TaqvimCod-v${VERSION}-win-x64.zip" TaqvimCod-win_x64.exe resources.neu
+          zip -q -r "../../../TaqvimCod-v${VERSION}-linux-x64.zip" TaqvimCod-linux_x64 resources.neu
+          cd ../../..
           ls -la TaqvimCod-v*-x64.zip
           echo "DESKTOP_VERSION=${VERSION}" >> "$GITHUB_ENV"
 
