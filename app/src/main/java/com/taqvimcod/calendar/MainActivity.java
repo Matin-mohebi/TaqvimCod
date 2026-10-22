@@ -110,6 +110,51 @@ public class MainActivity extends Activity {
 
     // ---------------- helpers ----------------
 
+
+    /** Compact offline prayer-time preview on the home screen. */
+    private View buildPrayerTimesCard() {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(dp(14), dp(10), dp(14), dp(10));
+        card.setBackground(round(pal.surface, 18));
+        card.setElevation(dp(2));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(dp(12), dp(5), dp(12), dp(7));
+        card.setLayoutParams(lp);
+
+        TextView title = text("🕌 اوقات شرعی امروز", 13.5f, pal.accent, Font.SEMIBOLD, true);
+        card.addView(title);
+        double lat = parseCoordinate(SecurePrefs.getString(this, "prayer_lat", "36.6736"), 36.6736);
+        double lon = parseCoordinate(SecurePrefs.getString(this, "prayer_lon", "48.4787"), 48.4787);
+        String city = SecurePrefs.getString(this, "prayer_city", "زنجان");
+        title.setText("🕌 اوقات شرعی " + city);
+        PrayerTimes.Day day = PrayerTimes.calculate(new Date(), lat, lon,
+                java.util.TimeZone.getDefault(), SecurePrefs.getInt(this, "prayer_method", 0));
+        long[] values = {day.fajr, day.sunrise, day.dhuhr, day.maghrib, day.isha};
+        String[] names = {"صبح", "طلوع", "ظهر", "مغرب", "عشا"};
+        SimpleDateFormat fmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setPadding(0, dp(7), 0, 0);
+        for (int i=0; i<values.length; i++) {
+            LinearLayout col = new LinearLayout(this);
+            col.setOrientation(LinearLayout.VERTICAL);
+            col.setGravity(Gravity.CENTER);
+            col.addView(text(names[i], 9.5f, pal.textSub, Font.REGULAR, false));
+            String time = values[i] == Long.MIN_VALUE ? "—" : S.d(this, fmt.format(new Date(values[i])));
+            col.addView(text(time, 11.5f, pal.text, Font.SEMIBOLD, true));
+            row.addView(col, new LinearLayout.LayoutParams(0, -2, 1f));
+        }
+        card.addView(row);
+        card.setOnClickListener(v -> startActivity(new Intent(this, PrayerActivity.class)));
+        card.setContentDescription("برای دیدن اوقات شرعی و قبله‌نما لمس کنید");
+        return card;
+    }
+
+    private double parseCoordinate(String value, double fallback) {
+        try { return Double.parseDouble(value); } catch (Exception ignored) { return fallback; }
+    }
+
     private int dp(float v) { return (int) (v * getResources().getDisplayMetrics().density); }
 
     /** Deliver background results only while this Activity is alive. */
@@ -278,6 +323,7 @@ public class MainActivity extends Activity {
         header.setBackground(round(pal.surface, 22));
         header.setElevation(dp(3));
         content.addView(header, lpHeader);
+        content.addView(buildPrayerTimesCard());
 
         LinearLayout navRow = new LinearLayout(this);
         navRow.setOrientation(LinearLayout.HORIZONTAL);
