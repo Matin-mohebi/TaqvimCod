@@ -37,6 +37,16 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_prayer_info" />
         </receiver>
 
+        <receiver android:name=".PrayerStatusReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name=".PrayerReminderReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="com.taqvimcod.calendar.PRAYER_REMINDER" />
