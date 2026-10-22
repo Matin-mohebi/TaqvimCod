@@ -8,6 +8,11 @@ import android.content.Intent;
 public final class PrayerStatusReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         String action = intent == null ? null : intent.getAction();
+        if (PrayerStatusNotification.ACTION_REFRESH.equals(action)) {
+            if (SecurePrefs.getBoolean(context, "status_notification_enabled", false))
+                PrayerStatusNotification.update(context);
+            return;
+        }
         if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
             if (SecurePrefs.getBoolean(context, "prayer_reminders_enabled", false))
                 PrayerReminderReceiver.scheduleAll(context);
