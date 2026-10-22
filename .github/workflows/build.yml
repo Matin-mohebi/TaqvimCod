@@ -77,6 +77,63 @@ jobs:
             --clobber --repo "$GITHUB_REPOSITORY"
           echo "APKs attached to release ${{ github.event.release.tag_name }}"
 
+  desktop:
+    # Windows + Linux desktop bundles (Neutralino shell around the web app)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: webapp/package-lock.json
+
+      - name: Build web app
+        working-directory: webapp
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build desktop bundles
+        working-directory: webapp
+        run: |
+          npx --yes @neutralinojs/neu@11.8.0 update
+          npx --yes @neutralinojs/neu@11.8.0 build --release
+          ls -la desktop-dist/TaqvimCod/
+
+      - name: Package desktop zips
+        working-directory: webapp
+        run: |
+          VERSION=$(grep -oP 'versionName\s+"\K[^"]+' ../app/build.gradle | head -1)
+          cd desktop-dist/TaqvimCod
+          zip -q -r "../../TaqvimCod-v${VERSION}-win-x64.zip" TaqvimCod-win_x64.exe resources.neu
+          zip -q -r "../../TaqvimCod-v${VERSION}-linux-x64.zip" TaqvimCod-linux_x64 resources.neu
+          cd ../..
+          ls -la TaqvimCod-v*-x64.zip
+          echo "DESKTOP_VERSION=${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Upload desktop artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TaqvimCod-v${{ env.DESKTOP_VERSION }}-desktop
+          path: TaqvimCod-v*-x64.zip
+          if-no-files-found: error
+
+      - name: Attach desktop bundles to GitHub Release
+        if: github.event_name == 'release'
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" TaqvimCod-v*-x64.zip \
+            --clobber --repo "$GITHUB_REPOSITORY"
+          echo "Desktop bundles attached to release ${{ github.event.release.tag_name }}"
+
   ios:
     runs-on: macos-14
     steps:

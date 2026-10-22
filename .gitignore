@@ -14,3 +14,7 @@ taqvimcod.keystore
 # apk outputs
 app/release/
 *.apk.idsig
+
+# neutralino desktop build
+webapp/bin/
+webapp/desktop-dist/

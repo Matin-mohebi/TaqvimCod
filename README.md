@@ -67,16 +67,20 @@
 
 سورس وب در پوشهٔ [`webapp/`](webapp/) نگه‌داری می‌شود و با هر تغییر به‌صورت خودکار در GitHub Pages مستقر می‌شود. صفحهٔ معرفی پروژه هم در آدرس [`landing.html`](https://matin-mohebi.github.io/TaqvimCod/landing.html) در دسترس است.
 
-## 📲 دریافت APK
+## 📲 دانلود | Download
 
-ساخت خودکار روی GitHub Actions انجام می‌شود. برای دریافت APK:
+**📥 از [Releases](https://github.com/Matin-mohebi/TaqvimCod/releases/latest) آخرین نسخه را بگیرید** — برای هر انتشار، این فایل‌ها به‌صورت خودکار ساخته و پیوست می‌شوند:
 
-1. وارد [آخرین اجراهای ساخت](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml) شوید.
-2. آخرین اجرای دارای وضعیت **Success** را باز کنید.
-3. در پایین صفحه، از بخش **Artifacts** فایل `TaqvimCod-APK` را دانلود کنید.
-4. ZIP را باز کنید و APK داخل آن را نصب کنید.
+| فایل | پلتفرم | توضیح |
+|:---|:---|:---|
+| `TaqvimCod-v*.0-release.apk` | 📱 اندروید | نسخهٔ امضاشدهٔ پایدار — برای نصب روی نسخه‌های قبلی |
+| `TaqvimCod-v*-debug.apk` | 📱 اندروید | فقط برای آزمایش |
+| `TaqvimCod-v*-win-x64.zip` | 🪟 ویندوز ۱۰/۱۱ | ZIP را باز کنید و `TaqvimCod-win_x64.exe` را اجرا کنید |
+| `TaqvimCod-v*-linux-x64.zip` | 🐧 لینوکس | `chmod +x TaqvimCod-linux_x64 && ./TaqvimCod-linux_x64` |
 
-**توجه:** فایل Debug برای آزمایش است و جای نسخهٔ Release امضاشده را نمی‌گیرد. تا وقتی فایل در [Releases](https://github.com/Matin-mohebi/TaqvimCod/releases) منتشر نشده، آن را نسخهٔ پایدار رسمی در نظر نگیرید. APK نسخهٔ Debug ممکن است برای نصب روی نسخهٔ قبلی به امضای یکسان نیاز داشته باشد.
+ساخت خودکار روی GitHub Actions انجام می‌شود (تست واحد + APK اندروید + اپ دسکتاپ ویندوز/لینوکس) و با انتشار هر Release، همهٔ فایل‌ها به‌صورت خودکار پیوست می‌شوند.
+
+**توجه:** APK نسخهٔ Debug برای آزمایش است و جای نسخهٔ Release امضاشده را نمی‌گیرد.
 
 ## 🛠️ ساخت از سورس
 

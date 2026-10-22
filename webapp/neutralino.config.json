@@ -1,0 +1,45 @@
+{
+  "applicationId": "ir.matin.taqvimcod",
+  "version": "1.9.0",
+  "defaultMode": "window",
+  "port": 0,
+  "documentRoot": "/dist/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "tokenSecurity": "one-time",
+  "exportAuthInfo": false,
+  "logging": {
+    "enabled": true,
+    "writeToLogFile": false
+  },
+  "nativeAllowList": [
+    "app.*",
+    "window.*",
+    "debug.*"
+  ],
+  "modes": {
+    "window": {
+      "title": "تقویم کد | TaqvimCod",
+      "width": 1200,
+      "height": 820,
+      "minWidth": 420,
+      "minHeight": 560,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "/dist/icons/icon-512.png",
+      "resizable": true,
+      "maximize": false,
+      "exitProcessOnClose": true
+    }
+  },
+  "cli": {
+    "binaryName": "TaqvimCod",
+    "resourcesPath": "/dist/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/dist/neutralino.js",
+    "binaryVersion": "6.10.0",
+    "clientVersion": "6.10.0",
+    "distributionPath": "desktop-dist"
+  }
+}
