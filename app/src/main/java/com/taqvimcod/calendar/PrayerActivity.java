@@ -41,6 +41,7 @@ public class PrayerActivity extends Activity implements SensorEventListener {
     private float magneticAzimuth;
     private boolean sensorAvailable;
     private Button reminderButton;
+    private Button statusNotificationButton;
     private TextView[] prayerTimesViews;
     private Spinner methodSpinner;
     private static final int REQUEST_NOTIFICATIONS = 813;
@@ -72,12 +73,18 @@ public class PrayerActivity extends Activity implements SensorEventListener {
         LinearLayout cityCard = card();
         cityLabel = text("", 17, pal.text, true);
         cityCard.addView(cityLabel);
-        Button change = button("تغییر شهر و مختصات");
+        Button chooseCity = button("انتخاب شهر از فهرست ایران");
+        chooseCity.setOnClickListener(v -> chooseCity());
+        cityCard.addView(chooseCity);
+        Button change = button("تنظیم دستی شهر و مختصات");
         change.setOnClickListener(v -> editLocation());
         cityCard.addView(change);
         reminderButton = button("");
         reminderButton.setOnClickListener(v -> toggleReminders());
         cityCard.addView(reminderButton);
+        statusNotificationButton = button("");
+        statusNotificationButton.setOnClickListener(v -> toggleStatusNotification());
+        cityCard.addView(statusNotificationButton);
         TextView methodLabel=text("روش محاسبه اوقات شرعی",13,pal.textSub,false);
         methodLabel.setPadding(0,dp(10),0,dp(3));
         cityCard.addView(methodLabel);
@@ -93,6 +100,8 @@ public class PrayerActivity extends Activity implements SensorEventListener {
                 SecurePrefs.putInt(PrayerActivity.this,"prayer_method",position);
                 if(prayerTimesViews!=null) renderTimes(prayerTimesViews);
                 PrayerWidgetProvider.updateAll(PrayerActivity.this);
+                if (SecurePrefs.getBoolean(PrayerActivity.this,"status_notification_enabled",false))
+                    PrayerStatusNotification.update(PrayerActivity.this);
                 if(SecurePrefs.getBoolean(PrayerActivity.this,"prayer_reminders_enabled",false)) {
                     PrayerReminderReceiver.cancelAll(PrayerActivity.this);
                     PrayerReminderReceiver.scheduleAll(PrayerActivity.this);
@@ -149,9 +158,70 @@ public class PrayerActivity extends Activity implements SensorEventListener {
         sensorAvailable = orientationSensor != null;
         updateLocationLabels();
         updateReminderButton();
+        updateStatusNotificationButton();
+        if (SecurePrefs.getBoolean(this,"status_notification_enabled",false)) PrayerStatusNotification.update(this);
         qiblaBearing = PrayerTimes.qiblaBearing(latitude, longitude);
         qiblaLabel.setText("جهت قبله از شمال جغرافیایی: " + S.d(this, String.format(Locale.US, "%.1f°", qiblaBearing)));
         if (!sensorAvailable) compassHeading.setText("حسگر جهت در این گوشی موجود نیست؛ زاویه قبله همچنان نمایش داده می‌شود.");
+    }
+
+    private void chooseCity() {
+        java.util.List<CityDatabase.City> cities = CityDatabase.getIranianCities();
+        String[] names = new String[cities.size()];
+        for (int i=0;i<cities.size();i++) names[i] = cities.get(i).name;
+        new AlertDialog.Builder(this).setTitle("انتخاب شهر")
+                .setItems(names, (dialog, which) -> {
+                    CityDatabase.City selected = cities.get(which);
+                    city = selected.name;
+                    latitude = selected.latitude;
+                    longitude = selected.longitude;
+                    saveLocationAndRefresh();
+                }).setNegativeButton("انصراف", null).show();
+    }
+
+    private void saveLocationAndRefresh() {
+        SecurePrefs.putString(this,"prayer_city",city);
+        SecurePrefs.putString(this,"prayer_lat",Double.toString(latitude));
+        SecurePrefs.putString(this,"prayer_lon",Double.toString(longitude));
+        updateLocationLabels();
+        qiblaBearing = PrayerTimes.qiblaBearing(latitude, longitude);
+        if (qiblaLabel != null) qiblaLabel.setText("جهت قبله از شمال جغرافیایی: " + S.d(this, String.format(Locale.US, "%.1f°", qiblaBearing)));
+        if (prayerTimesViews != null) renderTimes(prayerTimesViews);
+        PrayerWidgetProvider.updateAll(this);
+        if (SecurePrefs.getBoolean(this,"prayer_reminders_enabled",false)) {
+            PrayerReminderReceiver.cancelAll(this);
+            PrayerReminderReceiver.scheduleAll(this);
+        }
+        if (SecurePrefs.getBoolean(this,"status_notification_enabled",false)) PrayerStatusNotification.update(this);
+    }
+
+    private void toggleStatusNotification() {
+        boolean enabled = SecurePrefs.getBoolean(this,"status_notification_enabled",false);
+        if (enabled) {
+            SecurePrefs.putBoolean(this,"status_notification_enabled",false);
+            PrayerStatusNotification.cancel(this);
+            updateStatusNotificationButton();
+            Toast.makeText(this,"اعلان دائمی خاموش شد.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},814);
+            return;
+        }
+        enableStatusNotification();
+    }
+
+    private void enableStatusNotification() {
+        SecurePrefs.putBoolean(this,"status_notification_enabled",true);
+        PrayerStatusNotification.update(this);
+        updateStatusNotificationButton();
+        Toast.makeText(this,"اعلان دائمی تقویم فعال شد.",Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateStatusNotificationButton() {
+        if (statusNotificationButton == null) return;
+        boolean enabled = SecurePrefs.getBoolean(this,"status_notification_enabled",false);
+        statusNotificationButton.setText(enabled ? "خاموش‌کردن اعلان دائمی تاریخ و اذان بعدی" : "نمایش دائمی تاریخ و اذان بعدی در نوار اعلان");
     }
 
     private void toggleReminders() {
@@ -188,6 +258,9 @@ public class PrayerActivity extends Activity implements SensorEventListener {
         if (requestCode==REQUEST_NOTIFICATIONS) {
             if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) enableReminders();
             else Toast.makeText(this,"برای نمایش یادآوری‌ها باید اجازه اعلان‌ها را بدهید.",Toast.LENGTH_LONG).show();
+        } else if (requestCode==814) {
+            if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) enableStatusNotification();
+            else Toast.makeText(this,"برای نمایش اعلان دائمی باید اجازه اعلان‌ها را بدهید.",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -220,10 +293,7 @@ public class PrayerActivity extends Activity implements SensorEventListener {
                         if (city.isEmpty()) city="شهر انتخابی";
                         SecurePrefs.putString(this,"prayer_city",city);
                         SecurePrefs.putString(this,"prayer_lat",Double.toString(latitude));
-                        SecurePrefs.putString(this,"prayer_lon",Double.toString(longitude));
-                        updateLocationLabels();
-                        qiblaBearing=PrayerTimes.qiblaBearing(latitude,longitude);
-                        qiblaLabel.setText("جهت قبله از شمال جغرافیایی: "+S.d(this,String.format(Locale.US,"%.1f°",qiblaBearing)));
+                        saveLocationAndRefresh();
                         recreate();
                     } catch (Exception ex) {
                         Toast.makeText(this,"مختصات معتبر وارد کنید.",Toast.LENGTH_LONG).show();
