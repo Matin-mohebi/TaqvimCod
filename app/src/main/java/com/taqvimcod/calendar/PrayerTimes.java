@@ -31,11 +31,27 @@ public final class PrayerTimes {
         double noon = 12.0 + zone.getOffset(date.getTime()) / 3600000.0
                 - longitude / 15.0 - equationOfTime(jd) / 60.0;
         double decl = sunDeclination(jd + 0.5);
+        // hourAngle(a) is defined for sun altitude -a (the -sin(a) term), so sunrise,
+        // sunset, fajr and isha all pass POSITIVE angles; only asr (above-horizon
+        // altitude) passes a negative one.
+        double fajrAngle, ishaAngle;
+        switch (method) {
+            case 1:  fajrAngle = 18.0; ishaAngle = 17.0; break; // Muslim World League
+            case 2:  fajrAngle = 19.5; ishaAngle = 17.5; break; // Egyptian
+            case 3:  fajrAngle = 18.0; ishaAngle = 18.0; break; // Karachi
+            case 4:  fajrAngle = 15.0; ishaAngle = 15.0; break; // ISNA
+            case 5:  fajrAngle = 18.5; ishaAngle = -1.0; break; // Umm al-Qura: isha = maghrib + 90 min
+            default: fajrAngle = 17.7; ishaAngle = 14.0; break; // Tehran (Institute of Geophysics)
+        }
         double dhuhr = noon;
         double sunrise = noon - hourAngle(latitude, decl, 0.833) / 15.0;
-        double sunset = noon + hourAngle(latitude, decl, -0.833) / 15.0;
-        double fajr = noon - hourAngle(latitude, decl, 18.0) / 15.0;
-        double isha = noon + hourAngle(latitude, decl, 17.5) / 15.0;
+        // FIX: pass +0.833 (altitude -0.833°) — passing -0.833 computed the sun at
+        // +0.833° and made maghrib ~10 minutes too early.
+        double sunset = noon + hourAngle(latitude, decl, 0.833) / 15.0;
+        double fajr = noon - hourAngle(latitude, decl, fajrAngle) / 15.0;
+        double isha = ishaAngle < 0
+                ? sunset + 1.5 // Umm al-Qura: 90 minutes after sunset
+                : noon + hourAngle(latitude, decl, ishaAngle) / 15.0;
         double asrAltitude = Math.toDegrees(Math.atan(1.0 / (1.0 + Math.tan(Math.abs(Math.toRadians(latitude)-decl)))));
         double asr = noon + hourAngle(latitude, decl, -asrAltitude) / 15.0;
         return new Day(toMillis(c, fajr), toMillis(c, sunrise), toMillis(c, dhuhr),

@@ -8,7 +8,7 @@
 **شمسی · میلادی · قمری · رویدادها · اوقات شرعی · قبله‌نما**
 
 [![Android build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml)
-[![Latest code](https://img.shields.io/badge/version-1.7.0-0f766e?style=flat-square)](CHANGELOG.md)
+[![Latest code](https://img.shields.io/badge/version-1.7.1-0f766e?style=flat-square)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-334155?style=flat-square)](#-وضعیت-پروژه)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-0f766e?style=flat-square)](PRIVACY.md)
 [![License](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)](LICENSE)
@@ -29,7 +29,7 @@
 
 **تقویم (Taqvim)** یک تقویم فارسی برای Android با رابط راست‌چین، تاریخ‌های چندگانه و ابزارهای کاربردی روزانه است. پروژهٔ iOS نیز در پوشهٔ `ios/` نگه‌داری می‌شود. هدف این پروژه فقط نمایش روزها نیست؛ رویدادهای تقویم دستگاه، تعطیلات، شمارش معکوس مناسبت بعدی و ابزارهای اوقات شرعی هم در یک تجربهٔ منسجم کنار هم قرار می‌گیرند.
 
-> نسخهٔ کد فعلی: **Android 1.7.0** · کد نسخهٔ اندروید: **9**
+> نسخهٔ کد فعلی: **Android 1.7.1** · کد نسخهٔ اندروید: **10**
 
 ## ✨ امکانات
 
@@ -50,6 +50,22 @@
 | 🧩 ویجت | ویجت تقویم و ویجت اوقات شرعی برای صفحهٔ اصلی |
 | 🎨 تجربهٔ کاربری | تم روشن/تاریک، رابط فارسی و انگلیسی، طراحی سازگار با صفحه‌های مختلف |
 | 🔒 حریم خصوصی | محاسبات محلی؛ بدون مجوز اینترنت در برنامهٔ اندروید؛ جزئیات در [سیاست حریم خصوصی](PRIVACY.md) |
+
+## 🌐 نسخهٔ وب (تازه)
+
+تقویم حالا یک **وب‌اپ کامل** هم دارد — بدون نصب، مستقیم در مرورگر:
+
+**آدرس: <https://matin-mohebi.github.io/TaqvimCod/>**
+
+| بخش | امکانات وب |
+|---|---|
+| 🗓️ تقویم | ماه جلالی با تعطیلات و مناسبت‌ها، ناوبری و کشیدن صفحه، ساعت زنده و سه تاریخ هم‌زمان |
+| 🧰 ابزارها | تبدیل سه‌طرفهٔ شمسی/میلادی/قمری، فاصلهٔ دو تاریخ، محاسبهٔ سن، شمارش معکوس نوروز |
+| ☪️ اوقات شرعی | ۳۱ شهر ایران، ۶ روش محاسبه، شمارش معکوس تا اذان بعدی، قبله‌نما |
+| ✅ برنامه‌ریز | کارهای هر روز با ذخیرهٔ آفلاین روی دستگاه خودتان |
+| ⚙️ فنی | PWA نصب‌شدنی، Service Worker آفلاین، فونت self-hosted، تم روشن/تاریک — بدون هیچ سرور و ردیابی |
+
+سورس وب در پوشهٔ [`webapp/`](webapp/) نگه‌داری می‌شود و با هر تغییر به‌صورت خودکار در GitHub Pages مستقر می‌شود. صفحهٔ معرفی پروژه هم در آدرس [`landing.html`](https://matin-mohebi.github.io/TaqvimCod/landing.html) در دسترس است.
 
 ## 📲 دریافت APK
 
