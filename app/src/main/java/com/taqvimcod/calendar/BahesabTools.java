@@ -16,7 +16,7 @@ public final class BahesabTools {
 
     public static final class AgeResult {
         public final int years, months, days;
-        public final long totalDays;
+        public final long totalDays, totalHours, totalSeconds;
         public final int daysToNextBirthday;
         public final String zodiacSign;
 
@@ -26,9 +26,24 @@ public final class BahesabTools {
             this.months = months;
             this.days = days;
             this.totalDays = totalDays;
+            this.totalHours = totalDays * 24L;
+            this.totalSeconds = totalDays * 86400L;
             this.daysToNextBirthday = daysToNextBirthday;
             this.zodiacSign = zodiacSign;
         }
+    }
+
+    /** Absolute calendar-day difference between two valid Jalali dates. */
+    public static long dayDifference(int y1, int m1, int d1, int y2, int m2, int d2) {
+        validateDate(y1, m1, d1);
+        validateDate(y2, m2, d2);
+        return Math.abs((long) Dates.j2d(y2, m2, d2) - Dates.j2d(y1, m1, d1));
+    }
+
+    private static void validateDate(int year, int month, int day) {
+        if (year < 1 || month < 1 || month > 12 || day < 1
+                || day > Dates.jalaaliMonthLength(year, month))
+            throw new IllegalArgumentException("Invalid Jalali date");
     }
 
     /** Calculates age using the project's own Jalali calendar implementation. */
@@ -61,7 +76,7 @@ public final class BahesabTools {
         }
 
         int nextYear = today.jy;
-        if (today.jm > birthM || (today.jm == birthM && today.jd >= birthD)) nextYear++;
+        if (today.jm > birthM || (today.jm == birthM && today.jd > birthD)) nextYear++;
         int nextDay = Math.min(birthD, Dates.jalaaliMonthLength(nextYear, birthM));
         int nextBirthdayJdn = Dates.j2d(nextYear, birthM, nextDay);
 
