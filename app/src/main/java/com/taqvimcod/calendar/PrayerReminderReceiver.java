@@ -65,7 +65,7 @@ public class PrayerReminderReceiver extends BroadcastReceiver {
         if(when==Long.MIN_VALUE)return;
         if(when<=after){
             cal.add(Calendar.DAY_OF_YEAR,1);
-            day=PrayerTimes.calculate(cal.getTime(),lat,lon,TimeZone.getDefault());
+            day=PrayerTimes.calculate(cal.getTime(),lat,lon,TimeZone.getDefault(),SecurePrefs.getInt(context,"prayer_method",0));
             times=new long[]{day.fajr,day.dhuhr,day.asr,day.maghrib,day.isha};
             when=times[id];
         }
