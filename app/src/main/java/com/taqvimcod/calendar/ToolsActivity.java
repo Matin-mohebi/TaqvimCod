@@ -70,6 +70,7 @@ public final class ToolsActivity extends Activity {
         addTool(root, "☼", "تبدیل تاریخ شمسی", "انتخاب تاریخ شمسی و نمایش معادل میلادی و قمری", v -> chooseJalaliDate());
         addTool(root, "↔", "فاصلهٔ بین دو تاریخ", "محاسبهٔ تعداد روزهای بین دو تاریخ دلخواه", v -> chooseRangeStart());
         addTool(root, "🌱", "شمارش معکوس نوروز", "تعداد روزهای باقی‌مانده تا آغاز سال شمسی", v -> showNowruz());
+        addTool(root, "🎂", "محاسبهٔ سن", "سن شمسی، روزهای سپری‌شده و تولد بعدی", v -> startActivity(new Intent(this, AgeCalculatorActivity.class)));
         addSection(root, "اشتراک‌گذاری");
         addTool(root, "▣", "کپی تاریخ امروز", "کپی تاریخ شمسی، میلادی و قمری در کلیپ‌بورد", v -> copyToday());
         addTool(root, "↗", "اشتراک‌گذاری تاریخ", "ارسال تاریخ امروز به برنامه‌های دیگر", v -> shareToday());
