@@ -97,7 +97,7 @@ public final class AgeCalculatorActivity extends Activity {
                     String summary = String.format(Locale.ROOT,
                         "سن: %d سال، %d ماه و %d روز\nمجموع روزهای سپری‌شده: %d\nروز تا تولد بعدی: %d\nبرج ماه شمسی: %s",
                         result.years, result.months, result.days, result.totalDays,
-                        result.daysToNextBirthday, result.zodiacSign);
+                        result.totalHours, result.totalSeconds, result.daysToNextBirthday, result.zodiacSign);
                     new AlertDialog.Builder(this).setTitle("نتیجهٔ محاسبه").setMessage(summary).setPositiveButton("باشه", null).show();
                 } catch (IllegalArgumentException e) {
                     new AlertDialog.Builder(this).setTitle("تاریخ نامعتبر").setMessage("تاریخ تولد باید معتبر و در گذشته باشد.").setPositiveButton("باشه", null).show();
