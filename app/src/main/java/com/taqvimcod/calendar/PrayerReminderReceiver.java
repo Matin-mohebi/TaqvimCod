@@ -29,6 +29,8 @@ public class PrayerReminderReceiver extends BroadcastReceiver {
         int prayer = intent.getIntExtra("prayer_id",-1);
         if (prayer < 0 || prayer >= NAMES.length) return;
         showNotification(context, prayer);
+        if (SecurePrefs.getBoolean(context, "status_notification_enabled", false))
+            PrayerStatusNotification.update(context);
         scheduleOne(context, prayer, System.currentTimeMillis()+60_000L);
     }
 
