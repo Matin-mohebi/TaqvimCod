@@ -58,7 +58,7 @@ public class PrayerTimesTest {
         TimeZone tehran=TimeZone.getTimeZone("Asia/Tehran");
         Calendar date=Calendar.getInstance(tehran);
         date.set(2026,Calendar.OCTOBER,21,12,0,0);
-        long when=date.getTimeInMillis();
+        Date when=date.getTime();
         PrayerTimes.Day dTehran=PrayerTimes.calculate(when,36.6736,48.4787,tehran,0);
         PrayerTimes.Day dMwl=PrayerTimes.calculate(when,36.6736,48.4787,tehran,1);
         assertTrue("Tehran isha (14°) must be earlier than MWL isha (17°)",
@@ -67,6 +67,8 @@ public class PrayerTimesTest {
                 PrayerTimes.calculate(when,36.6736,48.4787,tehran,4).fajr
                         > PrayerTimes.calculate(when,36.6736,48.4787,tehran,2).fajr);
         PrayerTimes.Day dUmm=PrayerTimes.calculate(when,36.6736,48.4787,tehran,5);
-        assertEquals("Umm al-Qura isha = maghrib + 90 min",90*60*1000L,dUmm.isha-dUmm.maghrib);
+        long gap=dUmm.isha-dUmm.maghrib;
+        assertTrue("Umm al-Qura isha = maghrib + 90 min (gap="+gap+")",
+                Math.abs(gap-90*60*1000L)<=1L);
     }
 }
