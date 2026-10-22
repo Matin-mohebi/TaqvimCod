@@ -55,6 +55,7 @@ public class MainActivity extends Activity {
     private Dates.JDate today;
 
     private LinearLayout barWrap, chipsRow, panel;
+    private ScrollView pageScroll;
     private View statusSpacer;
     private TextView tvTodayBtn, tvSettingsBtn, tvPrayerBtn, tvSearchBtn, tvMonthYear, tvPrev, tvNext,
             tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge;
@@ -257,7 +258,10 @@ public class MainActivity extends Activity {
         tvTodayBtn.setPadding(dp(13), dp(7), dp(13), dp(7));
         tvTodayBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(0x33FFFFFF),
                 round(0x24FFFFFF, 19), null));
-        tvTodayBtn.setOnClickListener(v -> { resetToToday(); refreshAll(); });
+        tvTodayBtn.setOnClickListener(v -> {
+            resetToToday(); refreshAll();
+            if (pageScroll != null) pageScroll.smoothScrollTo(0, 0);
+        });
         barRow.addView(tvTodayBtn, new LinearLayout.LayoutParams(-2, -2));
 
         tvSearchBtn = text("⌕", 22, pal.onGrad, Font.MEDIUM, false);
@@ -314,6 +318,18 @@ public class MainActivity extends Activity {
         barRow.addView(tvFeaturesBtn, lpFeatures);
         barWrap.addView(barRow);
 
+        // ---- scrollable page: everything below the top bar scrolls together ----
+        // Fix: on small screens the fixed header (date + clock + countdown) and the
+        // month grid consumed the whole screen, pushing the events panel off-screen
+        // and leaving the date/events area impossible to scroll.
+        pageScroll = new ScrollView(this);
+        pageScroll.setFillViewport(true);
+        LinearLayout page = new LinearLayout(this);
+        page.setOrientation(LinearLayout.VERTICAL);
+        pageScroll.addView(page, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        content.addView(pageScroll, new LinearLayout.LayoutParams(-1, 0, 1f));
+
         // ---- header card ----
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.VERTICAL);
@@ -322,8 +338,8 @@ public class MainActivity extends Activity {
         lpHeader.setMargins(dp(12), dp(10), dp(12), dp(4));
         header.setBackground(round(pal.surface, 22));
         header.setElevation(dp(3));
-        content.addView(header, lpHeader);
-        content.addView(buildPrayerTimesCard());
+        page.addView(header, lpHeader);
+        page.addView(buildPrayerTimesCard());
 
         LinearLayout navRow = new LinearLayout(this);
         navRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -382,7 +398,7 @@ public class MainActivity extends Activity {
         });
         LinearLayout.LayoutParams lpMonth = new LinearLayout.LayoutParams(-1, -2);
         lpMonth.setMargins(dp(6), dp(2), dp(6), 0);
-        content.addView(month, lpMonth);
+        page.addView(month, lpMonth);
 
         // ---- events title row ----
         LinearLayout syncRow = new LinearLayout(this);
@@ -398,16 +414,13 @@ public class MainActivity extends Activity {
         tvSyncBadge.setPadding(dp(10), dp(4), dp(10), dp(4));
         tvSyncBadge.setBackground(round(pal.surfaceAlt, 14));
         syncRow.addView(tvSyncBadge);
-        content.addView(syncRow);
+        page.addView(syncRow);
 
-        // ---- events panel ----
-        ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
+        // ---- events panel (now part of the page scroll; no nested ScrollView) ----
         panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
         panel.setPadding(dp(12), dp(2), dp(12), dp(104));
-        scroll.addView(panel);
-        content.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1f));
+        page.addView(panel);
 
         // ---- FAB ----
         TextView fab = text("+", 26, pal.onAccent, Font.BOLD, true);
