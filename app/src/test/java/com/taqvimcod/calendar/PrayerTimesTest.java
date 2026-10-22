@@ -71,4 +71,17 @@ public class PrayerTimesTest {
         assertTrue("Umm al-Qura isha = maghrib + 90 min (gap="+gap+")",
                 Math.abs(gap-90*60*1000L)<=1L);
     }
+
+    /** Qibla bearings for well-known Iranian cities (great-circle to the Kaaba). */
+    @Test public void qiblaBearingsMatchKnownValues() {
+        assertBearing(36.6736, 48.4787, 208.6); // زنجان
+        assertBearing(35.6892, 51.3890, 218.4); // تهران
+        assertBearing(36.2972, 59.6067, 234.6); // مشهد
+        assertBearing(27.1832, 56.2666, 252.5); // بندرعباس
+    }
+
+    private static void assertBearing(double lat,double lon,double expected) {
+        double b=PrayerTimes.qiblaBearing(lat,lon);
+        assertTrue("bearing "+b+" vs expected "+expected, Math.abs(b-expected)<=1.0);
+    }
 }

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -13,6 +14,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -302,6 +304,36 @@ public final class UiDialogs {
         b.addView(rgTheme);
         gap(c, b, 12);
 
+        // ---- color palette picker (gradient circles; applies on recreate) ----
+        b.addView(label(c, pal, S.t(c, "palette"), 14, pal.text, true));
+        gap(c, b, 6);
+        HorizontalScrollView palScroll = new HorizontalScrollView(c);
+        palScroll.setHorizontalScrollBarEnabled(false);
+        LinearLayout palRow = new LinearLayout(c);
+        palRow.setOrientation(LinearLayout.HORIZONTAL);
+        palRow.setPadding(dp(c, 2), dp(c, 2), dp(c, 2), dp(c, 2));
+        int curPal = Prefs.palette(c);
+        for (int i = 0; i < Theme.PALETTE_COUNT; i++) {
+            final int pid = i;
+            Theme.Pal sample = Theme.palette(i, pal.dark);
+            GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                    new int[]{sample.gradStart, sample.gradEnd});
+            gd.setShape(GradientDrawable.OVAL);
+            if (i == curPal) gd.setStroke(dp(c, 3), pal.text);
+            View circle = new View(c);
+            circle.setBackground(gd);
+            circle.setContentDescription(paletteName(c, pid));
+            circle.setOnClickListener(v -> {
+                if (pid != Prefs.palette(c)) { Prefs.palette(c, pid); act.recreate(); }
+            });
+            LinearLayout.LayoutParams lpC = new LinearLayout.LayoutParams(dp(c, 46), dp(c, 46));
+            lpC.setMargins(dp(c, 5), dp(c, 2), dp(c, 5), dp(c, 2));
+            palRow.addView(circle, lpC);
+        }
+        palScroll.addView(palRow);
+        b.addView(palScroll, new LinearLayout.LayoutParams(-1, -2));
+        gap(c, b, 12);
+
         b.addView(label(c, pal, S.t(c, "language"), 14, pal.text, true));
         gap(c, b, 6);
         RadioGroup rgLang = new RadioGroup(c);
@@ -379,6 +411,24 @@ public final class UiDialogs {
         TextView playBtn = chip(c, pal, "▶ " + S.t(c, "play_protect_title"), pal.surfaceAlt, pal.text);
         playBtn.setOnClickListener(v -> playProtectFaq(act));
         b.addView(playBtn, new LinearLayout.LayoutParams(-2, -2));
+        gap(c, b, 10);
+
+        // ---- reminder tone picker (10 bundled chimes + system default) ----
+        int curTone = Prefs.reminderTone(c);
+        String toneLabel = curTone == 0 ? S.t(c, "tone_default") : S.t(c, "tone_" + curTone);
+        TextView toneBtn = chip(c, pal, "🔊 " + S.t(c, "reminder_tone") + ": " + toneLabel,
+                pal.accentSoft, pal.accent);
+        toneBtn.setOnClickListener(v -> reminderTonePicker(act));
+        b.addView(toneBtn, new LinearLayout.LayoutParams(-2, -2));
+        gap(c, b, 10);
+
+        // ---- share-card wallpaper picker (12 artworks + theme gradient) ----
+        int curWall = Prefs.shareWall(c);
+        String wallLabel = curWall == 0 ? S.t(c, "wall_default") : S.t(c, "wall_" + curWall);
+        TextView wallBtn = chip(c, pal, "🖼 " + S.t(c, "share_wall_title") + ": " + wallLabel,
+                pal.accentSoft, pal.accent);
+        wallBtn.setOnClickListener(v -> shareWallPicker(act));
+        b.addView(wallBtn, new LinearLayout.LayoutParams(-2, -2));
         gap(c, b, 14);
 
         b.addView(divider(c, pal));
@@ -389,6 +439,66 @@ public final class UiDialogs {
         b.addView(aboutBtn, new LinearLayout.LayoutParams(-2, -2));
 
         showLargeDialog(act, S.t(c, "settings"), b, S.t(c, "ok"));
+    }
+
+    // ================= reminder tone picker =================
+    public static void reminderTonePicker(MainActivity act) {
+        Context c = act;
+        Theme.Pal pal = act.pal;
+        String[] names = new String[11];
+        names[0] = S.t(c, "tone_default");
+        for (int i = 1; i <= 10; i++) names[i] = S.t(c, "tone_" + i);
+        final MediaPlayer[] preview = {null};
+        AlertDialog dlg = new AlertDialog.Builder(themed(act))
+                .setTitle(S.t(c, "reminder_tone"))
+                .setSingleChoiceItems(names, Prefs.reminderTone(c), (d, which) -> {
+                    if (which != Prefs.reminderTone(c)) {
+                        Prefs.reminderTone(c, which);
+                        // rebuild the reminder notification channel with the new sound
+                        PrayerReminderReceiver.refreshReminderChannel(c);
+                    }
+                    try {
+                        if (preview[0] != null) { preview[0].release(); preview[0] = null; }
+                        if (which > 0) {
+                            int resId = c.getResources().getIdentifier(
+                                    "tone_" + which, "raw", c.getPackageName());
+                            if (resId != 0) {
+                                preview[0] = MediaPlayer.create(c, resId);
+                                if (preview[0] != null) preview[0].start();
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                })
+                .setPositiveButton(S.t(c, "ok"), null)
+                .create();
+        dlg.setOnDismissListener(d -> {
+            try { if (preview[0] != null) { preview[0].release(); preview[0] = null; } }
+            catch (Exception ignored) {}
+        });
+        dlg.show();
+    }
+
+    // ================= share-card wallpaper picker =================
+    public static void shareWallPicker(MainActivity act) {
+        Context c = act;
+        String[] names = new String[13];
+        names[0] = S.t(c, "wall_default");
+        for (int i = 1; i <= 12; i++) names[i] = S.t(c, "wall_" + i);
+        new AlertDialog.Builder(themed(act))
+                .setTitle(S.t(c, "share_wall_title"))
+                .setSingleChoiceItems(names, Prefs.shareWall(c), (d, which) ->
+                        Prefs.shareWall(c, which))
+                .setPositiveButton(S.t(c, "ok"), null)
+                .show();
+    }
+    private static String paletteName(Context c, int id) {
+        switch (id) {
+            case Theme.PAL_MIDNIGHT: return S.t(c, "pal_midnight");
+            case Theme.PAL_SAFFRON:  return S.t(c, "pal_saffron");
+            case Theme.PAL_EMERALD:  return S.t(c, "pal_emerald");
+            case Theme.PAL_ROSE:     return S.t(c, "pal_rose");
+            default: return S.t(c, "pal_default");
+        }
     }
 
     // ================= privacy & play protect =================

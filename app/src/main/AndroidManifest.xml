@@ -25,6 +25,15 @@
         <activity android:name=".FeaturesActivity" android:exported="false" />
         <activity android:name=".DailyPlannerActivity" android:exported="false" />
         <activity android:name=".WorldCalendarActivity" android:exported="false" />
+        <activity android:name=".OnboardingActivity" android:exported="false" />
+
+        <!-- Dependency-free FileProvider equivalent: serves share-sheet PNGs from
+             cache/share (see ShareProvider.java and res/xml/file_paths.xml). -->
+        <provider
+            android:name=".ShareProvider"
+            android:authorities="com.taqvimcod.calendar.share"
+            android:exported="false"
+            android:grantUriPermissions="true" />
 
         <receiver android:name=".PrayerWidgetProvider" android:exported="false">
             <intent-filter>

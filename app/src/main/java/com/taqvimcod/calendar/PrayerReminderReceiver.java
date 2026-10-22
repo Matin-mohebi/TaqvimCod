@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.os.Build;
 
 import java.util.Calendar;
@@ -80,14 +82,64 @@ public class PrayerReminderReceiver extends BroadcastReceiver {
         }
     }
 
+    // ---------------- notification channel + tone ----------------
+
+    /**
+     * Channel id carries the selected tone (notification-channel sound is
+     * immutable after creation, so each tone gets its own channel and stale
+     * ones are deleted when the choice changes).
+     */
+    private static String channelFor(Context c) {
+        int tone = Prefs.reminderTone(c);
+        return tone <= 0 ? CHANNEL : CHANNEL + "_t" + tone;
+    }
+
+    private static NotificationChannel buildChannel(Context c, String channelId) {
+        NotificationChannel ch = new NotificationChannel(channelId,
+                "یادآوری اوقات شرعی", NotificationManager.IMPORTANCE_DEFAULT);
+        int tone = Prefs.reminderTone(c);
+        if (tone > 0) {
+            int resId = c.getResources().getIdentifier("tone_" + tone, "raw", c.getPackageName());
+            if (resId != 0) {
+                Uri sound = Uri.parse("android.resource://" + c.getPackageName() + "/" + resId);
+                AudioAttributes attrs = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build();
+                ch.setSound(sound, attrs);
+            }
+        }
+        return ch;
+    }
+
+    /** called after the user picks a new tone: drop stale tone channels and
+     *  pre-create the channel for the current choice */
+    public static void refreshReminderChannel(Context c) {
+        if (Build.VERSION.SDK_INT < 26) return;
+        NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+        String current = channelFor(c);
+        for (int i = 1; i <= 10; i++) {
+            String id = CHANNEL + "_t" + i;
+            if (!id.equals(current) && nm.getNotificationChannel(id) != null)
+                nm.deleteNotificationChannel(id);
+        }
+        if (nm.getNotificationChannel(current) == null)
+            nm.createNotificationChannel(buildChannel(c, current));
+    }
+
     private static void showNotification(Context context,int id) {
         NotificationManager nm=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         if(nm==null)return;
-        if(Build.VERSION.SDK_INT>=26) nm.createNotificationChannel(new NotificationChannel(CHANNEL,"یادآوری اوقات شرعی",NotificationManager.IMPORTANCE_DEFAULT));
+        String channelId = channelFor(context);
+        if(Build.VERSION.SDK_INT>=26) {
+            if (nm.getNotificationChannel(channelId) == null)
+                nm.createNotificationChannel(buildChannel(context, channelId));
+        }
         Intent open=new Intent(context,PrayerActivity.class);
         PendingIntent content=PendingIntent.getActivity(context,900+id,open,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
         android.app.Notification.Builder b=Build.VERSION.SDK_INT>=26
-                ? new android.app.Notification.Builder(context,CHANNEL)
+                ? new android.app.Notification.Builder(context,channelId)
                 : new android.app.Notification.Builder(context);
         b.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                 .setContentTitle("یادآوری اوقات شرعی")

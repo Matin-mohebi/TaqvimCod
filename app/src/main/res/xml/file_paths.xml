@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Documents the paths served by ShareProvider (our dependency-free
+    FileProvider equivalent, see ShareProvider.java).
+    Only {cacheDir}/share/ is exposed to the share sheet, read-only.
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="taqvim_share" path="share/" />
+</paths>

@@ -15,6 +15,10 @@ public final class Prefs {
     public static final String KEY_LANG = "lang";             // "fa" / "en"
     public static final String KEY_HIJRI_ADJ = "hijri_adj";   // -2..+2 (default -1, Iran)
     public static final String KEY_SECURE_SCREEN = "secure_screen"; // FLAG_SECURE
+    public static final String KEY_PALETTE = "palette";       // 0 turquoise / 1 midnight / 2 saffron / 3 emerald / 4 rose
+    public static final String KEY_ONBOARDING_DONE = "onboarding_done"; // first-launch onboarding shown
+    public static final String KEY_REMINDER_TONE = "reminder_tone";     // 0 system default, 1..10 raw/tone_N
+    public static final String KEY_SHARE_WALL = "share_wall";           // 0 theme gradient, 1..12 drawable wall_N
 
     private static volatile boolean migrated = false;
 
@@ -82,5 +86,52 @@ public final class Prefs {
     public static void secureScreen(Context c, boolean v) {
         migrate(c);
         SecurePrefs.putBoolean(c, KEY_SECURE_SCREEN, v);
+    }
+
+    /** color palette id (Theme.PAL_*) */
+    public static int palette(Context c) {
+        migrate(c);
+        int v = SecurePrefs.getInt(c, KEY_PALETTE, Theme.PAL_TURQUOISE);
+        return (v >= 0 && v < Theme.PALETTE_COUNT) ? v : Theme.PAL_TURQUOISE;
+    }
+
+    public static void palette(Context c, int v) {
+        migrate(c);
+        SecurePrefs.putInt(c, KEY_PALETTE, (v >= 0 && v < Theme.PALETTE_COUNT) ? v : Theme.PAL_TURQUOISE);
+    }
+
+    /** first-launch onboarding finished */
+    public static boolean onboardingDone(Context c) {
+        migrate(c);
+        return SecurePrefs.getBoolean(c, KEY_ONBOARDING_DONE, false);
+    }
+
+    public static void onboardingDone(Context c, boolean v) {
+        migrate(c);
+        SecurePrefs.putBoolean(c, KEY_ONBOARDING_DONE, v);
+    }
+
+    /** reminder chime: 0 = system default, 1..10 = res/raw/tone_N */
+    public static int reminderTone(Context c) {
+        migrate(c);
+        int v = SecurePrefs.getInt(c, KEY_REMINDER_TONE, 0);
+        return (v >= 0 && v <= 10) ? v : 0;
+    }
+
+    public static void reminderTone(Context c, int v) {
+        migrate(c);
+        SecurePrefs.putInt(c, KEY_REMINDER_TONE, (v >= 0 && v <= 10) ? v : 0);
+    }
+
+    /** share-card wallpaper: 0 = theme gradient, 1..12 = drawable/wall_N.jpg */
+    public static int shareWall(Context c) {
+        migrate(c);
+        int v = SecurePrefs.getInt(c, KEY_SHARE_WALL, 0);
+        return (v >= 0 && v <= 12) ? v : 0;
+    }
+
+    public static void shareWall(Context c, int v) {
+        migrate(c);
+        SecurePrefs.putInt(c, KEY_SHARE_WALL, (v >= 0 && v <= 12) ? v : 0);
     }
 }

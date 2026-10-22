@@ -1,5 +1,6 @@
 package com.taqvimcod.calendar;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.res.ColorStateList;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -32,6 +35,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -57,12 +61,16 @@ public class MainActivity extends Activity {
     private LinearLayout barWrap, chipsRow, panel;
     private ScrollView pageScroll;
     private View statusSpacer;
+    private LinearLayout headerCard;
+    private View prayerCard;
+    private MoonGlyphView moonGlyph;
     private TextView tvTodayBtn, tvSettingsBtn, tvPrayerBtn, tvSearchBtn, tvMonthYear, tvPrev, tvNext,
-            tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge;
+            tvDateMain, tvDateSub, tvLiveClock, tvEventsTitle, tvSyncBadge, tvShareCard;
     private FrameLayout countdownCard;
     private TextView tvCountDays, tvCountLabel, tvCountName;
     private MonthView month;
     private SparseArray<MonthView.DayCell> lastCells = new SparseArray<>();
+    private List<CalendarRepo.Ev> lastDayEvents = new ArrayList<>();
     private boolean rationaleShown;
     private volatile boolean destroyed;
     private int lastClockJdn = Integer.MIN_VALUE;
@@ -92,6 +100,10 @@ public class MainActivity extends Activity {
             resetToToday();
         }
         super.onCreate(savedInstanceState);
+        // first-launch onboarding (3 swipe pages) sits on top of the main screen
+        if (!Prefs.onboardingDone(this)) {
+            try { startActivity(new Intent(this, OnboardingActivity.class)); } catch (Exception ignored) {}
+        }
         buildUi();
         if (!CalendarRepo.hasPerms(this)) askPermission();
     }
@@ -122,6 +134,7 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.setMargins(dp(12), dp(5), dp(12), dp(7));
         card.setLayoutParams(lp);
+        prayerCard = card;
 
         TextView title = text("🕌 اوقات شرعی امروز", 13.5f, pal.accent, Font.SEMIBOLD, true);
         card.addView(title);
@@ -331,14 +344,14 @@ public class MainActivity extends Activity {
         content.addView(pageScroll, new LinearLayout.LayoutParams(-1, 0, 1f));
 
         // ---- header card ----
-        LinearLayout header = new LinearLayout(this);
-        header.setOrientation(LinearLayout.VERTICAL);
-        header.setPadding(dp(16), dp(10), dp(16), dp(14));
+        headerCard = new LinearLayout(this);
+        headerCard.setOrientation(LinearLayout.VERTICAL);
+        headerCard.setPadding(dp(16), dp(10), dp(16), dp(14));
         LinearLayout.LayoutParams lpHeader = new LinearLayout.LayoutParams(-1, -2);
         lpHeader.setMargins(dp(12), dp(10), dp(12), dp(4));
-        header.setBackground(round(pal.surface, 22));
-        header.setElevation(dp(3));
-        page.addView(header, lpHeader);
+        headerCard.setBackground(round(pal.surface, 22));
+        headerCard.setElevation(dp(3));
+        page.addView(headerCard, lpHeader);
         page.addView(buildPrayerTimesCard());
 
         LinearLayout navRow = new LinearLayout(this);
@@ -365,30 +378,39 @@ public class MainActivity extends Activity {
         tvNext.setBackground(ripple(0x00000000, 20));
         tvNext.setOnClickListener(v -> changeMonth(true));
         navRow.addView(tvNext);
-        header.addView(navRow);
+        headerCard.addView(navRow);
 
+        // date row: selected date on one side, canvas-painted moon glyph on the other
+        LinearLayout dateRow = new LinearLayout(this);
+        dateRow.setOrientation(LinearLayout.HORIZONTAL);
+        dateRow.setGravity(Gravity.CENTER_VERTICAL);
         tvDateMain = text("", 16.5f, pal.text, Font.SEMIBOLD, true);
-        header.addView(tvDateMain, new LinearLayout.LayoutParams(-2, -2));
+        dateRow.addView(tvDateMain, new LinearLayout.LayoutParams(0, -2, 1f));
+        moonGlyph = new MoonGlyphView(this);
+        LinearLayout.LayoutParams lpMoon = new LinearLayout.LayoutParams(dp(30), dp(30));
+        lpMoon.leftMargin = dp(8);
+        dateRow.addView(moonGlyph, lpMoon);
+        headerCard.addView(dateRow, new LinearLayout.LayoutParams(-1, -2));
         LinearLayout.LayoutParams lpSub = new LinearLayout.LayoutParams(-2, -2);
         lpSub.topMargin = dp(2);
         tvDateSub = text("", 12, pal.textSub, Font.REGULAR, false);
-        header.addView(tvDateSub, lpSub);
+        headerCard.addView(tvDateSub, lpSub);
 
         tvLiveClock = text("", 18, pal.accent, Font.SEMIBOLD, true);
         tvLiveClock.setPadding(0, dp(8), 0, dp(2));
         tvLiveClock.setContentDescription(fa ? "ساعت زنده دستگاه" : "Live device clock");
-        header.addView(tvLiveClock, new LinearLayout.LayoutParams(-2, -2));
+        headerCard.addView(tvLiveClock, new LinearLayout.LayoutParams(-2, -2));
 
         chipsRow = new LinearLayout(this);
         chipsRow.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams lpChips = new LinearLayout.LayoutParams(-2, -2);
         lpChips.topMargin = dp(9);
-        header.addView(chipsRow, lpChips);
+        headerCard.addView(chipsRow, lpChips);
 
         countdownCard = countdownView();
         LinearLayout.LayoutParams lpCd = new LinearLayout.LayoutParams(-1, -2);
         lpCd.topMargin = dp(10);
-        header.addView(countdownCard, lpCd);
+        headerCard.addView(countdownCard, lpCd);
 
         // ---- month view ----
         month = new MonthView(this);
@@ -410,6 +432,14 @@ public class MainActivity extends Activity {
         TextView sp2 = new TextView(this);
         sp2.setLayoutParams(new LinearLayout.LayoutParams(0, 1, 1f));
         syncRow.addView(sp2);
+        tvShareCard = text("🖼 " + S.t(this, "share_card"), 11, pal.accent, Font.MEDIUM, false);
+        tvShareCard.setPadding(dp(10), dp(5), dp(10), dp(5));
+        tvShareCard.setBackground(round(pal.accentSoft, 14));
+        tvShareCard.setContentDescription(S.t(this, "share_card"));
+        tvShareCard.setOnClickListener(v -> shareDayCard());
+        LinearLayout.LayoutParams lpShare = new LinearLayout.LayoutParams(-2, -2);
+        lpShare.leftMargin = dp(8);
+        syncRow.addView(tvShareCard, lpShare);
         tvSyncBadge = text("● " + S.t(this, "sync_active"), 10, pal.green, Font.MEDIUM, false);
         tvSyncBadge.setPadding(dp(10), dp(4), dp(10), dp(4));
         tvSyncBadge.setBackground(round(pal.surfaceAlt, 14));
@@ -458,6 +488,28 @@ public class MainActivity extends Activity {
         rootF.addView(content);
         rootF.addView(fab, lpFab);
         setContentView(rootF);
+        runEntranceAnimations();
+    }
+
+    /** staggered card entrance (first build of the screen; durations capped at 250ms) */
+    private void runEntranceAnimations() {
+        animateIn(headerCard, 0L);
+        animateIn(prayerCard, 90L);
+    }
+
+    private void animateIn(View v, long startDelay) {
+        if (v == null) return;
+        v.setAlpha(0f);
+        v.setTranslationY(dp(14));
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(v, View.ALPHA, 0f, 1f);
+        ObjectAnimator lift = ObjectAnimator.ofFloat(v, View.TRANSLATION_Y, dp(14), 0f);
+        DecelerateInterpolator ease = new DecelerateInterpolator(1.4f);
+        alpha.setDuration(250).setInterpolator(ease);
+        lift.setDuration(250).setInterpolator(ease);
+        alpha.setStartDelay(startDelay);
+        lift.setStartDelay(startDelay);
+        alpha.start();
+        lift.start();
     }
 
     private void applySecureFlag() {
@@ -715,8 +767,10 @@ public class MainActivity extends Activity {
             tvMonthYear.setText(S.fmtMonthYear(this, curJy, curJm));
             int[] tdy = {today.jy, today.jm, today.jd};
             month.setup(curJy, curJm, selJd, tdy, cells, pal, fa);
+            // subtle month-change fade + slide (durations capped at 250ms)
             month.setAlpha(0.25f);
-            month.animate().alpha(1f).setDuration(200).start();
+            month.setTranslationY(dp(5));
+            month.animate().alpha(1f).translationY(0f).setDuration(230).start();
             updateHeaderInfo();
             updateCountdown();
             tvSyncBadge.setVisibility(canRead ? View.VISIBLE : View.GONE);
@@ -733,6 +787,9 @@ public class MainActivity extends Activity {
         int jdn = Dates.j2d(selJy, selJm, selJd);
         Dates.GDate g = Dates.d2g(jdn);
         Dates.HDate h = Dates.hijriFromJdn(jdn, Prefs.hijriAdj(this));
+        if (moonGlyph != null) {
+            moonGlyph.setup(pal, MoonPhase.at(Dates.dayStartUtcMillis(jdn) + 12L * 3600000L));
+        }
         tvDateSub.setText(S.fmtGDate(this, g) + "  •  " + S.fmtHDate(this, h));
         tvDateMain.setContentDescription(fa
                 ? S.fmtJDate(this, sel) + "؛ برای کپی تاریخ، چند لحظه نگه دارید"
@@ -817,7 +874,51 @@ public class MainActivity extends Activity {
 
     // ---------------- panel ----------------
 
+    /**
+     * Renders the selected day as a 1080x1350 share image: saves it to the
+     * gallery (MediaStore Pictures/TaqvimCod) and opens the share sheet with
+     * a content:// uri served by ShareProvider (no external dependencies).
+     */
+    private void shareDayCard() {
+        final List<CalendarRepo.Ev> events = new ArrayList<>(lastDayEvents);
+        final int jy = selJy, jm = selJm, jd = selJd;
+        final Theme.Pal cardPal = pal;
+        final boolean cardFa = fa;
+        exec.execute(() -> {
+            try {
+                Bitmap bmp = DayCard.build(this, cardPal, cardFa, jy, jm, jd, events);
+                String fileName = "taqvim-day-" + jy + "-" + jm + "-" + jd + ".png";
+                final boolean savedToGallery = DayCard.saveToGallery(this, bmp, fileName) != null;
+                final File shareFile = DayCard.saveToShareCache(this, bmp, "day-card.png");
+                postUi(() -> {
+                    if (savedToGallery) {
+                        Toast.makeText(this, S.t(this, "share_card_saved"), Toast.LENGTH_SHORT).show();
+                    }
+                    if (shareFile != null) {
+                        Uri uri = ShareProvider.uriFor(getPackageName(), shareFile.getName());
+                        Intent send = new Intent(Intent.ACTION_SEND);
+                        send.setType("image/png");
+                        send.putExtra(Intent.EXTRA_STREAM, uri);
+                        // ClipData carries the URI grant through the chooser
+                        send.setClipData(ClipData.newRawUri("taqvim_card", uri));
+                        send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        try {
+                            startActivity(Intent.createChooser(send, S.t(this, "share_card")));
+                        } catch (Exception ignored) {
+                            Toast.makeText(this, S.t(this, "share_card_failed"), Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (!savedToGallery) {
+                        Toast.makeText(this, S.t(this, "share_card_failed"), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (Exception ignored) {
+                postUi(() -> Toast.makeText(this, S.t(this, "share_card_failed"), Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
     private void buildPanel(List<CalendarRepo.Ev> events) {
+        lastDayEvents = events;
         panel.removeAllViews();
         if (!CalendarRepo.hasReadPerm(this)) {
             panel.addView(banner());
