@@ -5,13 +5,15 @@ on:
     branches: [ main, master ]
   pull_request:
   workflow_dispatch:
+  release:
+    types: [ published ]
 
 concurrency:
   group: taqvimcod-build-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   android:
@@ -61,6 +63,19 @@ jobs:
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/release/*.apk
           if-no-files-found: error
+
+      - name: Attach signed release APK to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep -oP 'versionName\s+"\K[^"]+' app/build.gradle | head -1)
+          cp app/build/outputs/apk/release/app-release.apk "TaqvimCod-v${VERSION}-release.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "TaqvimCod-v${VERSION}-debug.apk"
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "TaqvimCod-v${VERSION}-release.apk" "TaqvimCod-v${VERSION}-debug.apk" \
+            --clobber --repo "$GITHUB_REPOSITORY"
+          echo "APKs attached to release ${{ github.event.release.tag_name }}"
 
   ios:
     runs-on: macos-14
