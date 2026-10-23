@@ -69,6 +69,7 @@ public final class S {
         FA.put("websites", "وب‌سایت‌ها");
         FA.put("phone", "تلفن");
         FA.put("instagram", "اینستاگرام");
+        FA.put("telegram", "تلگرام");
         FA.put("desc_line", "تقویم ایرانی با همگام‌سازی لحظه‌ای گوگل کالندر — دقیق و سریع");
         FA.put("version", "نسخه");
         FA.put("time_range", "%s تا %s");
@@ -201,6 +202,7 @@ public final class S {
         EN.put("websites", "Websites");
         EN.put("phone", "Phone");
         EN.put("instagram", "Instagram");
+        EN.put("telegram", "Telegram");
         EN.put("desc_line", "Iranian calendar with real-time Google Calendar sync — accurate & fast");
         EN.put("version", "Version");
         EN.put("time_range", "%s – %s");

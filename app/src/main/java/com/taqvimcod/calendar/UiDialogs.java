@@ -564,7 +564,12 @@ public final class UiDialogs {
         gap(c, b, 6);
         addWebsiteButton(act, b, pal, "🚚 اعلام بار زنجان  •  elambar-zanjan.ir", "https://elambar-zanjan.ir");
         gap(c, b, 8);
-        TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_wp_pro",
+        TextView tvTg = label(c, pal, S.t(c, "telegram") + ": t.me/matin3620",
+                13, pal.accent, false);
+        linkify(tvTg, Pattern.compile("t\\.me/[^\\s]+"));
+        b.addView(tvTg);
+        gap(c, b, 6);
+        TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_web_site",
                 13, pal.accent, false);
         linkify(tvInsta, Pattern.compile("instagram\\.com/[^\\s]+"));
         b.addView(tvInsta);
