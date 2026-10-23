@@ -564,16 +564,6 @@ public final class UiDialogs {
         gap(c, b, 6);
         addWebsiteButton(act, b, pal, "🚚 اعلام بار زنجان  •  elambar-zanjan.ir", "https://elambar-zanjan.ir");
         gap(c, b, 8);
-        TextView tvPhone = label(c, pal, S.t(c, "phone") + ": 09195394891", 13, pal.accent, false);
-        try {
-            Linkify.addLinks(tvPhone, Pattern.compile("09\\d{9}"), "tel:", null,
-                    (match, url) -> match.group());
-            tvPhone.setLinksClickable(true);
-            tvPhone.setMovementMethod(LinkMovementMethod.getInstance());
-            tvPhone.setLinkTextColor(tvPhone.getPaint().getColor());
-        } catch (Exception ignored) {}
-        b.addView(tvPhone);
-        gap(c, b, 8);
         TextView tvInsta = label(c, pal, S.t(c, "instagram") + ": instagram.com/matin_wp_pro",
                 13, pal.accent, false);
         linkify(tvInsta, Pattern.compile("instagram\\.com/[^\\s]+"));

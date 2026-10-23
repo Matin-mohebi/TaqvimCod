@@ -57,4 +57,4 @@ Safe for all ages; no data collection of any kind.
 Any change is published in this file (PRIVACY.md) in the GitHub repository.
 
 ## تماس / Contact
-Matin — https://matinzeus.ir — 09195394891 — instagram.com/matin_web_site
+Matin — https://matinzeus.ir — t.me/matin3620 — instagram.com/matin_web_site

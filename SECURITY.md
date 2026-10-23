@@ -25,7 +25,7 @@
 
 اگر آسیب‌پذیری امنیتی پیدا کردی، لطفاً **از طریق Issues عمومی گزارش نده**. به یکی از راه‌های زیر اطلاع بده:
 
-- ایمیل/تماس: 09195394891 (تلفن یا واتساپ)
+- تلگرام: [@matin3620](https://t.me/matin3620)
 - اینستاگرام: [@matin_web_site](https://instagram.com/matin_web_site)
 - سایت: https://matinzeus.ir
 
@@ -34,5 +34,5 @@
 </div>
 
 Please **do not report security vulnerabilities through public GitHub issues**.
-Use the private contact channels above (phone/WhatsApp 09195394891, Instagram, or matinzeus.ir).
+Use the private contact channels above (Telegram @matin3620, Instagram, or matinzeus.ir).
 You will receive a response within 72 hours.
