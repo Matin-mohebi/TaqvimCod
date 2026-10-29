@@ -55,27 +55,36 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon
 
-      - name: Upload APKs
+      - name: Build Release AAB (Google Play)
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Upload APKs and AAB
         uses: actions/upload-artifact@v4
         with:
-          name: TaqvimCod-APK
+          name: TaqvimCod-Android
           path: |
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
-      - name: Attach signed release APK to GitHub Release
-        if: github.event_name == 'release'
+      - name: Attach signed release APK and AAB to GitHub Release
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(grep -oP 'versionName\s+"\K[^"]+' app/build.gradle | head -1)
           cp app/build/outputs/apk/release/app-release.apk "TaqvimCod-v${VERSION}-release.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "TaqvimCod-v${VERSION}-release.aab"
           cp app/build/outputs/apk/debug/app-debug.apk "TaqvimCod-v${VERSION}-debug.apk"
-          gh release upload "${{ github.event.release.tag_name }}" \
-            "TaqvimCod-v${VERSION}-release.apk" "TaqvimCod-v${VERSION}-debug.apk" \
+          TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then
+            TAG=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)
+          fi
+          gh release upload "$TAG" \
+            "TaqvimCod-v${VERSION}-release.apk" "TaqvimCod-v${VERSION}-release.aab" "TaqvimCod-v${VERSION}-debug.apk" \
             --clobber --repo "$GITHUB_REPOSITORY"
-          echo "APKs attached to release ${{ github.event.release.tag_name }}"
+          echo "Signed APK + AAB attached to release $TAG"
 
   desktop:
     # Windows + Linux desktop bundles (Neutralino shell around the web app)
