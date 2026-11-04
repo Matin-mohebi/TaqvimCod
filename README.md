@@ -8,8 +8,8 @@
 **شمسی · میلادی · قمری · رویدادها · اوقات شرعی · قبله‌نما**
 
 [![Android build](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Matin-mohebi/TaqvimCod/actions/workflows/build.yml)
-[![Latest code](https://img.shields.io/badge/version-1.8.0-0f766e?style=flat-square)](CHANGELOG.md)
-[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-334155?style=flat-square)](#-وضعیت-پروژه)
+[![Latest code](https://img.shields.io/badge/version-1.9.2-0f766e?style=flat-square)](CHANGELOG.md)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Desktop-334155?style=flat-square)](#-وضعیت-پروژه)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-0f766e?style=flat-square)](PRIVACY.md)
 [![License](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)](LICENSE)
 
@@ -29,7 +29,7 @@
 
 **تقویم (Taqvim)** یک تقویم فارسی برای Android با رابط راست‌چین، تاریخ‌های چندگانه و ابزارهای کاربردی روزانه است. پروژهٔ iOS نیز در پوشهٔ `ios/` نگه‌داری می‌شود. هدف این پروژه فقط نمایش روزها نیست؛ رویدادهای تقویم دستگاه، تعطیلات، شمارش معکوس مناسبت بعدی و ابزارهای اوقات شرعی هم در یک تجربهٔ منسجم کنار هم قرار می‌گیرند.
 
-> نسخهٔ کد فعلی: **Android 1.8.0** · کد نسخهٔ اندروید: **12**
+> آخرین نسخهٔ منتشرشده: **v1.9.2** · نسخهٔ Android: **1.9.2** · کد نسخهٔ Android: **15**
 
 ## ✨ امکانات
 
@@ -66,6 +66,15 @@
 | ⚙️ فنی | PWA نصب‌شدنی، Service Worker آفلاین، فونت self-hosted، تم روشن/تاریک — بدون هیچ سرور و ردیابی |
 
 سورس وب در پوشهٔ [`webapp/`](webapp/) نگه‌داری می‌شود و با هر تغییر به‌صورت خودکار در GitHub Pages مستقر می‌شود. صفحهٔ معرفی پروژه هم در آدرس [`landing.html`](https://matin-mohebi.github.io/TaqvimCod/landing.html) در دسترس است.
+
+## 🏷️ نسخه‌ها و انتشار | Versions
+
+- **آخرین انتشار:** [v1.9.2](https://github.com/Matin-mohebi/TaqvimCod/releases/tag/v1.9.2) — منتشرشده در ۲۳ اکتبر ۲۰۲۶
+- **Android:** `versionName 1.9.2` · `versionCode 15`
+- **فایل‌های انتشار:** APK امضاشده، APK آزمایشی، AAB و بسته‌های دسکتاپ ویندوز و لینوکس (در صورت وجود در همان Release)
+- **تاریخچهٔ نسخه‌ها:** [CHANGELOG.md](CHANGELOG.md) و [صفحهٔ Releases](https://github.com/Matin-mohebi/TaqvimCod/releases)
+
+شمارهٔ نسخه و فایل دانلود را از آخرین Release بررسی کنید؛ فایل Debug فقط برای آزمایش است.
 
 ## 📲 دانلود | Download
 
@@ -136,7 +145,7 @@ TaqvimCod/
 - [x] ابزار اوقات شرعی، قبله‌نما، یادآوری و ویجت
 - [x] جست‌وجوی محلی رویدادها در ماه جاری
 - [x] ساخت خودکار APK آزمایشی
-- [ ] انتشار Release پایدار با امضای رسمی
+- [x] ساخت Release اندروید با امضای اختصاصی (در صورت تنظیم کلید انتشار)
 - [ ] تکمیل و اعتبارسنجی انتشار عمومی نسخهٔ iOS
 
 وضعیت هر قابلیت ممکن است بین Android و iOS متفاوت باشد؛ فهرست بالا به معنی آماده‌بودن همهٔ قابلیت‌ها روی هر دو پلتفرم نیست.
